@@ -1,10 +1,10 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
+#include <string>
 #include "move.h"
 
-/*
-The board is represented as an array of 120 elements, enumerated from 0 to 119.
+/* The board is represented as an array of 120 elements, enumerated from 0 to 119.
 Some of the numbers represent positions outside of the board, as shown in the diagram:
 
 110 111 112 113 114 115 116 117 118 119 
@@ -42,9 +42,7 @@ class GameState
 public:
     GameState();
 
-    void reset();
-
-    void print_board();
+    void load_FEN_string(std::string FEN_string);
 
     void make_move(Move& move);
 
