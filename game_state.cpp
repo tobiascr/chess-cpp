@@ -6,7 +6,7 @@ GameState::GameState()
 {
     for(int i=0; i<120; i++)
     {
-        board[i].type = BoardItemType::outside_of_board;
+        board[i].type = BoardItem::outside_of_board;
     }
     load_FEN_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
     number_of_captured_pieces = 0;
@@ -19,7 +19,7 @@ void GameState::load_FEN_string(std::string FEN_string)
     {
         for(int c=1; c<=8; c++)
         {
-            board[r+c].type = BoardItemType::empty_square;
+            board[r+c].type = BoardItem::empty_square;
         }
     }
 
@@ -32,62 +32,62 @@ void GameState::load_FEN_string(std::string FEN_string)
         char c = FEN_string[i];
         if(c == 'P')
         {
-            board[square].type = BoardItemType::pawn;
+            board[square].type = BoardItem::pawn;
             board[square].color = Color::white;
         }
         if(c == 'p')
         {
-            board[square].type = BoardItemType::pawn;
+            board[square].type = BoardItem::pawn;
             board[square].color = Color::black;
         }
         if(c == 'N')
         {
-            board[square].type = BoardItemType::knight;
+            board[square].type = BoardItem::knight;
             board[square].color = Color::white;
         }
         if(c == 'n')
         {
-            board[square].type = BoardItemType::knight;
+            board[square].type = BoardItem::knight;
             board[square].color = Color::black;
         }
         if(c == 'B')
         {
-            board[square].type = BoardItemType::bishop;
+            board[square].type = BoardItem::bishop;
             board[square].color = Color::white;
         }
         if(c == 'b')
         {
-            board[square].type = BoardItemType::bishop;
+            board[square].type = BoardItem::bishop;
             board[square].color = Color::black;
         }
         if(c == 'R')
         {
-            board[square].type = BoardItemType::rook;
+            board[square].type = BoardItem::rook;
             board[square].color = Color::white;
         }
         if(c == 'r')
         {
-            board[square].type = BoardItemType::rook;
+            board[square].type = BoardItem::rook;
             board[square].color = Color::black;
         }
         if(c == 'Q')
         {
-            board[square].type = BoardItemType::queen;
+            board[square].type = BoardItem::queen;
             board[square].color = Color::white;
         }
         if(c == 'q')
         {
-            board[square].type = BoardItemType::queen;
+            board[square].type = BoardItem::queen;
             board[square].color = Color::black;
         }
         if(c == 'K')
         {
-            board[square].type = BoardItemType::king;
+            board[square].type = BoardItem::king;
             board[square].color = Color::white;
         }
         if(c == 'k')
         {
-            board[square].type = BoardItemType::king;
+            board[square].type = BoardItem::king;
             board[square].color = Color::black;
         }
         if(c == '/')

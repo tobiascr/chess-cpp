@@ -26,13 +26,12 @@ Position 21 is a1, 22 is b1 etc. The positions are called squares, even if they 
 of the board.
 */
 
-enum BoardItemType {empty_square, pawn, knight, bishop, rook, queen, king, outside_of_board};
-
 enum Color {white = 1, black = -1};
 
 class BoardItem
 {
 public:
+    enum BoardItemType {empty_square, pawn, knight, bishop, rook, queen, king, outside_of_board};
     BoardItemType type;
     Color color;
 };

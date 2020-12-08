@@ -5,12 +5,12 @@
 
 void print_board_item(BoardItem board_item)
 {
-    if(board_item.type == BoardItemType::empty_square)
+    if(board_item.type == BoardItem::empty_square)
     {
         std::cout << ".";
     }
 
-    if(board_item.type == BoardItemType::pawn)
+    if(board_item.type == BoardItem::pawn)
     {
         if(board_item.color == Color::white)
             std::cout << "P";
@@ -18,7 +18,7 @@ void print_board_item(BoardItem board_item)
             std::cout << "p";
     }
 
-    if(board_item.type == BoardItemType::knight)
+    if(board_item.type == BoardItem::knight)
     {
         if(board_item.color == Color::white)
             std::cout << "N";
@@ -26,7 +26,7 @@ void print_board_item(BoardItem board_item)
             std::cout << "n";
     }
 
-    if(board_item.type == BoardItemType::bishop)
+    if(board_item.type == BoardItem::bishop)
     {
         if(board_item.color == Color::white)
             std::cout << "B";
@@ -34,7 +34,7 @@ void print_board_item(BoardItem board_item)
             std::cout << "b";
     }
 
-    if(board_item.type == BoardItemType::rook)
+    if(board_item.type == BoardItem::rook)
     {
         if(board_item.color == Color::white)
             std::cout << "R";
@@ -42,7 +42,7 @@ void print_board_item(BoardItem board_item)
             std::cout << "r";
     }
 
-    if(board_item.type == BoardItemType::queen)
+    if(board_item.type == BoardItem::queen)
     {
         if(board_item.color == Color::white)
             std::cout << "Q";
@@ -50,7 +50,7 @@ void print_board_item(BoardItem board_item)
             std::cout << "q";
     }
 
-    if(board_item.type == BoardItemType::king)
+    if(board_item.type == BoardItem::king)
     {
         if(board_item.color == Color::white)
             std::cout << "K";
