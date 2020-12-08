@@ -38,5 +38,10 @@ int main()
     std::cout << "type: " << game_state.board[25].type << std::endl;
     std::cout << "color: " << game_state.board[25].color << std::endl;
 
+    game_state.reset();
+
+    std::cout << "type: " << game_state.board[25].type << std::endl;
+    std::cout << "color: " << game_state.board[25].color << std::endl;
+
     return 0;
 }

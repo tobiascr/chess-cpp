@@ -9,13 +9,13 @@ GameState::GameState()
 
 void GameState::reset()
 {
-//    for(int i=0; i<120; i++)
-//    {
-//        if(board[i] != outside_of_board)
-//        {
-//            board[i] = empty_square;
-//        }
-//    }
+    for(int i=0; i<120; i++)
+    {
+        if(board[i].type != BoardItemType::outside_of_board)
+        {
+            board[i].type = BoardItemType::empty_square;
+        }
+    }
 }
 
 void GameState::print_board()
