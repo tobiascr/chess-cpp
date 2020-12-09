@@ -124,5 +124,16 @@ int main()
     auto c = Color::white;
     c = Color::opposite_color(c);
     std::cout << -c << std::endl;
+
+    game_state.load_FEN_string("Rr5k/8/8/8/8/8/3K4/8 w - - 0 1");
+    print_board(game_state);
+    move.type = MoveType::capture;
+    move.from_square = 91;
+    move.to_square = 92;
+    game_state.make_move(move);
+    print_board(game_state);
+    game_state.undo_move(move);
+    print_board(game_state);
+
     return 0;
 }

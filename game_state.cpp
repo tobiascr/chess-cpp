@@ -163,9 +163,9 @@ void GameState::undo_move(Move& move)
             board[move.to_square].type = BoardItem::empty_square;
             break;
         case MoveType::capture:
+            number_of_captured_pieces--;
             board[move.from_square] = board[move.to_square];
             board[move.to_square] = captured_pieces[number_of_captured_pieces];
-            number_of_captured_pieces--;
             break;
     }
 }
