@@ -26,14 +26,19 @@ Position 21 is a1, 22 is b1 etc. The positions are called squares, even if they 
 of the board.
 */
 
-enum Color {white = 1, black = -1};
+namespace Color
+{
+    enum ColorType {white = 1, black = -1};
+
+    ColorType opposite_color(ColorType color);
+}
 
 class BoardItem
 {
 public:
     enum BoardItemType {empty_square, pawn, knight, bishop, rook, queen, king, outside_of_board};
     BoardItemType type;
-    Color color;
+    Color::ColorType color;
 };
 
 class GameState
@@ -49,7 +54,7 @@ public:
 
     BoardItem board[120];
 
-    Color player_in_turn = Color::white;
+    Color::ColorType player_in_turn = Color::white;
 
 private:
     BoardItem captured_pieces[32];

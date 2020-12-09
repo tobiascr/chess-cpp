@@ -2,6 +2,14 @@
 #include <iostream>
 #include "game_state.h"
 
+namespace Color
+{
+    ColorType opposite_color(ColorType color)
+    {
+        return static_cast<ColorType>(-color);
+    }
+}
+
 GameState::GameState()
 {
     for(int i=0; i<120; i++)
@@ -129,10 +137,35 @@ void GameState::load_FEN_string(std::string FEN_string)
 
 void GameState::make_move(Move& move)
 {
-
+    player_in_turn = Color::opposite_color(player_in_turn);
+    switch(move.type)
+    {
+        case MoveType::non_capture:
+            board[move.to_square] = board[move.from_square];
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::capture:
+            captured_pieces[number_of_captured_pieces] = board[move.to_square];
+            number_of_captured_pieces++;
+            board[move.to_square] = board[move.from_square];
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+    }
 }
 
 void GameState::undo_move(Move& move)
 {
-
+    player_in_turn = Color::opposite_color(player_in_turn);
+    switch(move.type)
+    {
+        case MoveType::non_capture:
+            board[move.from_square] = board[move.to_square];
+            board[move.to_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::capture:
+            board[move.from_square] = board[move.to_square];
+            board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            number_of_captured_pieces--;
+            break;
+    }
 }

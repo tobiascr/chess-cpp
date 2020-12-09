@@ -96,7 +96,14 @@ int main()
 
     print_board(game_state);
 
-    std::cout << -game_state.player_in_turn << std::endl;
+    move.type = MoveType::non_capture;
+    move.from_square = 35;
+    move.to_square = 55;
+
+    game_state.make_move(move);
+    print_board(game_state);
+    game_state.undo_move(move);
+    print_board(game_state);
 
     game_state.make_move(move);
     game_state.undo_move(move);
@@ -113,5 +120,9 @@ int main()
     print_board(game_state);
     game_state.load_FEN_string("r1bqk2r/pppp1p1p/2n2np1/1Bb1p3/4P3/2N2N2/PPPP1PPP/R1BQ1RK1 w Qkq - 0");
     print_board(game_state);
+
+    auto c = Color::white;
+    c = Color::opposite_color(c);
+    std::cout << -c << std::endl;
     return 0;
 }
