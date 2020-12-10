@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <iostream>
 #include "game_state.h"
 
 namespace Color

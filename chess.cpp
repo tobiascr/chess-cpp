@@ -1,7 +1,7 @@
 #include <iostream>
-#include <vector>
 #include "move.h"
 #include "game_state.h"
+#include "move_generator.h"
 
 void print_board_item(BoardItem board_item)
 {
@@ -88,9 +88,8 @@ int main()
     std::cout << "from: "<< move.from_square << std::endl;
     std::cout << "to: "<< move.to_square << std::endl;
 
-    std::vector<Move> move_list;
-
-    move_list.push_back(move);
+//    std::vector<Move> move_list;
+//    move_list.push_back(move);
 
     GameState game_state;
 
@@ -121,11 +120,11 @@ int main()
     game_state.load_FEN_string("r1bqk2r/pppp1p1p/2n2np1/1Bb1p3/4P3/2N2N2/PPPP1PPP/R1BQ1RK1 w Qkq - 0");
     print_board(game_state);
 
-    auto c = Color::white;
-    c = Color::opposite_color(c);
-    std::cout << -c << std::endl;
+//    auto c = Color::white;
+//    c = Color::opposite_color(c);
+//    std::cout << -c << std::endl;
 
-    game_state.load_FEN_string("Rr5k/8/8/8/8/8/3K4/8 w - - 0 1");
+    game_state.load_FEN_string("Rr5k/8/8/8/8/8/8/3Kq3 w - - 0 1");
     print_board(game_state);
     move.type = MoveType::capture;
     move.from_square = 91;
@@ -133,6 +132,32 @@ int main()
     game_state.make_move(move);
     print_board(game_state);
     game_state.undo_move(move);
+    print_board(game_state);
+
+    MoveGenerator generator;
+    std::vector<Move>& move_list = generator.get_moves(game_state);
+
+    std::cout << "Size: " << move_list.size() << std::endl;
+
+    game_state.make_move(move_list[0]);
+    print_board(game_state);
+    game_state.undo_move(move_list[0]);
+    print_board(game_state);
+    game_state.make_move(move_list[1]);
+    print_board(game_state);
+    game_state.undo_move(move_list[1]);
+    print_board(game_state);
+    game_state.make_move(move_list[2]);
+    print_board(game_state);
+    game_state.undo_move(move_list[2]);
+    print_board(game_state);
+    game_state.make_move(move_list[3]);
+    print_board(game_state);
+    game_state.undo_move(move_list[3]);
+    print_board(game_state);
+    game_state.make_move(move_list[4]);
+    print_board(game_state);
+    game_state.undo_move(move_list[4]);
     print_board(game_state);
 
     return 0;
