@@ -131,6 +131,17 @@ void GameState::load_FEN_string(std::string FEN_string)
         square++;
         i++;
     }
+
+    // Load active color
+    i++;
+    if(FEN_string[i] == 'w')
+    {
+        player_in_turn = Color::white;
+    }
+    else
+    {
+        player_in_turn = Color::black;
+    }
 }
 
 void GameState::make_move(Move& move)

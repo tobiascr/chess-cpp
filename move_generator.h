@@ -14,6 +14,7 @@ private:
     std::vector<Move> move_list;
 
     void generate_king_moves(GameState& game_state, int square);
+    void generate_knight_moves(GameState& game_state, int square);
 };
 
 #endif

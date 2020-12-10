@@ -78,87 +78,25 @@ int main()
 {
     std::cout << "Chess" << std::endl;
 
-    Move move;
-
-    move.type = MoveType::queenside_castling;
-    move.from_square = 1;
-    move.to_square = 1;
-
-    std::cout << "type: " << move.type << std::endl;
-    std::cout << "from: "<< move.from_square << std::endl;
-    std::cout << "to: "<< move.to_square << std::endl;
-
-//    std::vector<Move> move_list;
-//    move_list.push_back(move);
-
     GameState game_state;
 
     print_board(game_state);
 
-    move.type = MoveType::non_capture;
-    move.from_square = 35;
-    move.to_square = 55;
-
-    game_state.make_move(move);
-    print_board(game_state);
-    game_state.undo_move(move);
-    print_board(game_state);
-
-    game_state.make_move(move);
-    game_state.undo_move(move);
-
-    std::cout << "type: " << game_state.board[25].type << std::endl;
-    std::cout << "color: " << game_state.board[25].color << std::endl;
-
-    std::cout << "type: " << game_state.board[25].type << std::endl;
-    std::cout << "color: " << game_state.board[25].color << std::endl;
-
     std::cout << std::endl;
-
-    game_state.load_FEN_string("brBKpppp/qqqqQQQQ/PBrrrrKq/p1P2q2/8/8/k7/1P6 ");
-    print_board(game_state);
-    game_state.load_FEN_string("r1bqk2r/pppp1p1p/2n2np1/1Bb1p3/4P3/2N2N2/PPPP1PPP/R1BQ1RK1 w Qkq - 0");
-    print_board(game_state);
-
-//    auto c = Color::white;
-//    c = Color::opposite_color(c);
-//    std::cout << -c << std::endl;
-
-    game_state.load_FEN_string("Rr5k/8/8/8/8/8/8/3Kq3 w - - 0 1");
-    print_board(game_state);
-    move.type = MoveType::capture;
-    move.from_square = 91;
-    move.to_square = 92;
-    game_state.make_move(move);
-    print_board(game_state);
-    game_state.undo_move(move);
-    print_board(game_state);
+    game_state.load_FEN_string("Rr5k/8/8/N5n1/8/8/8/3Kq3 b - - 0 1");
 
     MoveGenerator generator;
     std::vector<Move>& move_list = generator.get_moves(game_state);
 
     std::cout << "Size: " << move_list.size() << std::endl;
 
-    game_state.make_move(move_list[0]);
-    print_board(game_state);
-    game_state.undo_move(move_list[0]);
-    print_board(game_state);
-    game_state.make_move(move_list[1]);
-    print_board(game_state);
-    game_state.undo_move(move_list[1]);
-    print_board(game_state);
-    game_state.make_move(move_list[2]);
-    print_board(game_state);
-    game_state.undo_move(move_list[2]);
-    print_board(game_state);
-    game_state.make_move(move_list[3]);
-    print_board(game_state);
-    game_state.undo_move(move_list[3]);
-    print_board(game_state);
-    game_state.make_move(move_list[4]);
-    print_board(game_state);
-    game_state.undo_move(move_list[4]);
-    print_board(game_state);
+    for(Move move : move_list)
+    {
+        game_state.make_move(move);
+        print_board(game_state);
+        game_state.undo_move(move);
+        print_board(game_state);
+    }
 
     return 0;
 }

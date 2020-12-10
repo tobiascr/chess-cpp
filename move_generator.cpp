@@ -16,6 +16,11 @@ std::vector<Move>& MoveGenerator::get_moves(GameState& game_state)
                         generate_king_moves(game_state, square);
                         continue;
                     }
+                    if(game_state.board[square].type == BoardItem::knight)
+                    {
+                        generate_knight_moves(game_state, square);
+                        continue;
+                    }
                 }
             }
         }
@@ -27,12 +32,41 @@ std::vector<Move>& MoveGenerator::get_moves(GameState& game_state)
 void MoveGenerator::generate_king_moves(GameState& game_state, int from_square)
 {
     Move move;
-    const int to_squares[8] =
-            {from_square + 9, from_square + 10, from_square + 11, from_square + 1,
-             from_square - 9, from_square - 10, from_square - 11, from_square - 1};
+    const int changes[8] = {9, 10, 11, 1, - 9, - 10, -11, -1};
 
-    for(int to_square : to_squares)
+    for(int change : changes)
     {
+        int to_square = from_square + change;
+        if(game_state.board[to_square].type == BoardItem::outside_of_board)
+        {
+            continue;
+        }
+        if(game_state.board[to_square].type == BoardItem::empty_square)
+        {
+            move.type = MoveType::non_capture;
+            move.from_square = from_square;
+            move.to_square = to_square;
+            move_list.push_back(move);
+            continue;
+        }
+        if(game_state.board[to_square].color != game_state.player_in_turn)
+        {
+            move.type = MoveType::capture;
+            move.from_square = from_square;
+            move.to_square = to_square;
+            move_list.push_back(move);
+        }
+    }
+}
+
+void MoveGenerator::generate_knight_moves(GameState& game_state, int from_square)
+{
+    Move move;
+    const int changes[8] = {8, 12, 19, 21, -8, -12, -19, -21};
+
+    for(int change : changes)
+    {
+        int to_square = from_square + change;
         if(game_state.board[to_square].type == BoardItem::outside_of_board)
         {
             continue;
