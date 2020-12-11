@@ -21,6 +21,21 @@ std::vector<Move>& MoveGenerator::get_moves(GameState& game_state)
                         generate_knight_moves(game_state, square);
                         continue;
                     }
+                    if(game_state.board[square].type == BoardItem::bishop)
+                    {
+                        generate_bishop_moves(game_state, square);
+                        continue;
+                    }
+                    if(game_state.board[square].type == BoardItem::rook)
+                    {
+                        generate_rook_moves(game_state, square);
+                        continue;
+                    }
+                    if(game_state.board[square].type == BoardItem::queen)
+                    {
+                        generate_queen_moves(game_state, square);
+                        continue;
+                    }
                 }
             }
         }
@@ -87,4 +102,80 @@ void MoveGenerator::generate_knight_moves(GameState& game_state, int from_square
             move_list.push_back(move);
         }
     }
+}
+
+void MoveGenerator::generate_bishop_moves(GameState& game_state, int from_square)
+{
+    Move move;
+    const int changes[4] = {9, 11, -9, -11};
+
+    for(int change : changes)
+    {
+        int to_square = from_square + change;
+        while(true)
+        {
+            if(game_state.board[to_square].type == BoardItem::empty_square)
+            {
+                move.type = MoveType::non_capture;
+                move.from_square = from_square;
+                move.to_square = to_square;
+                move_list.push_back(move);
+                to_square += change;
+                continue;
+            }
+            if(game_state.board[to_square].type == BoardItem::outside_of_board)
+            {
+                break;
+            }
+            if(game_state.board[to_square].color != game_state.player_in_turn)
+            {
+                move.type = MoveType::capture;
+                move.from_square = from_square;
+                move.to_square = to_square;
+                move_list.push_back(move); 
+            }
+            break;
+        }
+    }
+}
+
+void MoveGenerator::generate_rook_moves(GameState& game_state, int from_square)
+{
+    Move move;
+    const int changes[4] = {10, -10, 1, -1};
+
+    for(int change : changes)
+    {
+        int to_square = from_square + change;
+        while(true)
+        {
+            if(game_state.board[to_square].type == BoardItem::empty_square)
+            {
+                move.type = MoveType::non_capture;
+                move.from_square = from_square;
+                move.to_square = to_square;
+                move_list.push_back(move);
+                to_square += change;
+                continue;
+            }
+            if(game_state.board[to_square].type == BoardItem::outside_of_board)
+            {
+                break;
+            }
+            if(game_state.board[to_square].color != game_state.player_in_turn)
+            {
+                move.type = MoveType::capture;
+                move.from_square = from_square;
+                move.to_square = to_square;
+                move_list.push_back(move); 
+            }
+            break;
+        }
+    }
+}
+
+void MoveGenerator::generate_queen_moves(GameState& game_state, int from_square)
+{
+    generate_bishop_moves(game_state, from_square);
+    generate_rook_moves(game_state, from_square);
 }

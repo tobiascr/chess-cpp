@@ -15,6 +15,9 @@ private:
 
     void generate_king_moves(GameState& game_state, int square);
     void generate_knight_moves(GameState& game_state, int square);
+    void generate_bishop_moves(GameState& game_state, int square);
+    void generate_rook_moves(GameState& game_state, int square);
+    void generate_queen_moves(GameState& game_state, int square);
 };
 
 #endif

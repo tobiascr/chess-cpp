@@ -76,19 +76,13 @@ void print_board(GameState& game_state)
 
 int main()
 {
-    std::cout << "Chess" << std::endl;
-
     GameState game_state;
-
-    print_board(game_state);
-
-    std::cout << std::endl;
-    game_state.load_FEN_string("Rr5k/8/8/N5n1/8/8/8/3Kq3 b - - 0 1");
+    game_state.load_FEN_string("5k2/1r1n4/8/1Qb5/1nK5/8/8/8 w - - 0 1");
 
     MoveGenerator generator;
     std::vector<Move>& move_list = generator.get_moves(game_state);
 
-    std::cout << "Size: " << move_list.size() << std::endl;
+    std::cout << "Number of moves: " << move_list.size() << std::endl;
 
     for(Move move : move_list)
     {
@@ -98,16 +92,6 @@ int main()
         game_state.undo_move(move);
         print_board(game_state);
     }
-
-    // Castling test
-    game_state.load_FEN_string("r3k2r/p3p2p/2b3b1/8/6N1/1N6/P3P2P/R3K2R w KQkq - 0 1");
-    print_board(game_state);
-    Move move;
-    move.type = MoveType::black_kingside_castling;
-    game_state.make_move(move);
-    print_board(game_state);
-    game_state.undo_move(move);
-    print_board(game_state);
 
     return 0;
 }
