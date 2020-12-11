@@ -94,9 +94,10 @@ int main()
     {
         game_state.make_move(move);
         print_board(game_state);
+        std::cout << move.UCI_format() << std::endl << std::endl;
         game_state.undo_move(move);
         print_board(game_state);
     }
-
+ 
     return 0;
 }
