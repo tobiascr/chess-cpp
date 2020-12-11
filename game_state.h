@@ -54,7 +54,7 @@ public:
 
     BoardItem board[120];
 
-    Color::ColorType player_in_turn = Color::white;
+    Color::ColorType player_in_turn;
 
 private:
     BoardItem captured_pieces[32];

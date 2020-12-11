@@ -98,6 +98,16 @@ int main()
         game_state.undo_move(move);
         print_board(game_state);
     }
- 
+
+    // Castling test
+    game_state.load_FEN_string("r3k2r/p3p2p/2b3b1/8/6N1/1N6/P3P2P/R3K2R w KQkq - 0 1");
+    print_board(game_state);
+    Move move;
+    move.type = MoveType::black_kingside_castling;
+    game_state.make_move(move);
+    print_board(game_state);
+    game_state.undo_move(move);
+    print_board(game_state);
+
     return 0;
 }

@@ -159,6 +159,30 @@ void GameState::make_move(Move& move)
             board[move.to_square] = board[move.from_square];
             board[move.from_square].type = BoardItem::empty_square;
             break;
+        case MoveType::white_kingside_castling:
+            board[27] = board[25];
+            board[26] = board[28];
+            board[25].type = BoardItem::empty_square;
+            board[28].type = BoardItem::empty_square;
+            break;
+        case MoveType::white_queenside_castling:
+            board[23] = board[25];
+            board[24] = board[21];
+            board[21].type = BoardItem::empty_square;
+            board[25].type = BoardItem::empty_square;
+            break;
+        case MoveType::black_kingside_castling:
+            board[97] = board[95];
+            board[96] = board[98];
+            board[95].type = BoardItem::empty_square;
+            board[98].type = BoardItem::empty_square;
+            break;
+        case MoveType::black_queenside_castling:
+            board[93] = board[95];
+            board[94] = board[91];
+            board[91].type = BoardItem::empty_square;
+            board[95].type = BoardItem::empty_square;
+            break;
     }
 }
 
@@ -175,6 +199,30 @@ void GameState::undo_move(Move& move)
             number_of_captured_pieces--;
             board[move.from_square] = board[move.to_square];
             board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            break;
+        case MoveType::white_kingside_castling:
+            board[25] = board[27];
+            board[28] = board[26];
+            board[26].type = BoardItem::empty_square;
+            board[27].type = BoardItem::empty_square;
+            break;
+        case MoveType::white_queenside_castling:
+            board[25] = board[23];
+            board[21] = board[24];
+            board[23].type = BoardItem::empty_square;
+            board[24].type = BoardItem::empty_square;
+            break;
+        case MoveType::black_kingside_castling:
+            board[95] = board[97];
+            board[98] = board[96];
+            board[96].type = BoardItem::empty_square;
+            board[97].type = BoardItem::empty_square;
+            break;
+        case MoveType::black_queenside_castling:
+            board[95] = board[93];
+            board[91] = board[94];
+            board[93].type = BoardItem::empty_square;
+            board[94].type = BoardItem::empty_square;
             break;
     }
 }
