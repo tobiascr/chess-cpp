@@ -1,6 +1,7 @@
 #include "move_generator.h"
 
-std::vector<Move>& MoveGenerator::get_moves(GameState& game_state)
+std::vector<Move>& MoveGenerator::
+                   get_moves_no_castlings_only_queen_promotions(GameState& game_state)
 {
     for(int r=20; r<=90; r+=10)
     {
@@ -11,30 +12,23 @@ std::vector<Move>& MoveGenerator::get_moves(GameState& game_state)
             {
                 if(game_state.board[square].color == game_state.player_in_turn)
                 {
-                    if(game_state.board[square].type == BoardItem::king)
+                    switch(game_state.board[square].type)
                     {
-                        generate_king_moves(game_state, square);
-                        continue;
-                    }
-                    if(game_state.board[square].type == BoardItem::knight)
-                    {
-                        generate_knight_moves(game_state, square);
-                        continue;
-                    }
-                    if(game_state.board[square].type == BoardItem::bishop)
-                    {
-                        generate_bishop_moves(game_state, square);
-                        continue;
-                    }
-                    if(game_state.board[square].type == BoardItem::rook)
-                    {
-                        generate_rook_moves(game_state, square);
-                        continue;
-                    }
-                    if(game_state.board[square].type == BoardItem::queen)
-                    {
-                        generate_queen_moves(game_state, square);
-                        continue;
+                        case BoardItem::king:
+                            generate_king_moves(game_state, square);
+                            break;
+                        case BoardItem::knight:
+                            generate_knight_moves(game_state, square);
+                            break;
+                        case BoardItem::bishop:
+                            generate_bishop_moves(game_state, square);
+                            break;
+                        case BoardItem::rook:
+                            generate_rook_moves(game_state, square);
+                            break;
+                        case BoardItem::queen:
+                            generate_queen_moves(game_state, square);
+                            break;
                     }
                 }
             }
@@ -72,6 +66,21 @@ void MoveGenerator::generate_king_moves(GameState& game_state, int from_square)
             move_list.push_back(move);
         }
     }
+}
+
+void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square)
+{
+    // Ordinary non capture
+
+    // Capture
+
+    // Double pawn push
+
+    // En passant
+
+    // Promotion
+
+    // Capture promotion
 }
 
 void MoveGenerator::generate_knight_moves(GameState& game_state, int from_square)

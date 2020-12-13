@@ -8,12 +8,13 @@
 class MoveGenerator
 {
 public:
-    std::vector<Move>& get_moves(GameState& game_state);
+    std::vector<Move>& get_moves_no_castlings_only_queen_promotions(GameState& game_state);
 
 private:
     std::vector<Move> move_list;
 
     void generate_king_moves(GameState& game_state, int square);
+    void generate_pawn_moves(GameState& game_state, int square);
     void generate_knight_moves(GameState& game_state, int square);
     void generate_bishop_moves(GameState& game_state, int square);
     void generate_rook_moves(GameState& game_state, int square);

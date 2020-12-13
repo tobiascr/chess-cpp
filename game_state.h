@@ -56,6 +56,16 @@ public:
 
     Color::ColorType player_in_turn;
 
+    int en_passant_target_square; // The square for the piece to capture. If an en passant 
+                                  // is not possible it should be set to zero.
+
+    // Castling rights are set to true iff the king and corresponding rook has never been
+    // moved.
+    bool white_kingside_castling;
+    bool white_queenside_castling;
+    bool black_kingside_castling;
+    bool black_queenside_castling;
+
 private:
     BoardItem captured_pieces[32];
     int number_of_captured_pieces;

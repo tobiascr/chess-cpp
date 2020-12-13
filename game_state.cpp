@@ -1,3 +1,4 @@
+#include <map>
 #include "game_state.h"
 
 namespace Color
@@ -142,6 +143,86 @@ void GameState::load_FEN_string(std::string FEN_string)
     {
         player_in_turn = Color::black;
     }
+
+    // Load castling rights
+    i += 2;
+    white_kingside_castling = false;
+    white_queenside_castling = false;
+    black_kingside_castling = false;
+    black_queenside_castling = false;
+    if(FEN_string[i] != '-')
+    {
+        while(FEN_string[i] != ' ')
+        {
+            switch(FEN_string[i])
+            {
+                case 'K':
+                    white_kingside_castling = true;
+                    break;
+                case 'Q':
+                    white_queenside_castling = true;
+                    break;
+                case 'k':
+                    black_kingside_castling = true;
+                    break;
+                case 'q':
+                    black_queenside_castling = true;
+                    break;
+            }
+            i++;
+        }
+    }
+    else
+    {
+        i++;
+    }
+
+    // Load en passant target square
+    i++;
+    if(FEN_string[i] == '-')
+    {
+        en_passant_target_square = 0;
+    }
+    else
+    {
+        char col = FEN_string[i];
+        char row = FEN_string[i + 1];
+
+        std::string square = FEN_string.substr(i, 2);
+
+        std::map<std::string, int> internal_format =
+        {{"a1", 21}, {"b1", 22}, {"c1", 23}, {"d1", 24}, {"e1", 25}, {"f1", 26}, {"g1", 27}, {"h1", 28},
+         {"a2", 31}, {"b2", 32}, {"c2", 33}, {"d2", 34}, {"e2", 35}, {"f2", 36}, {"g2", 37}, {"h2", 38},
+         {"a3", 41}, {"b3", 42}, {"c3", 43}, {"d3", 44}, {"e3", 45}, {"f3", 46}, {"g3", 47}, {"h3", 48},
+         {"a4", 51}, {"b4", 52}, {"c4", 53}, {"d4", 54}, {"e4", 55}, {"f4", 56}, {"g4", 57}, {"h4", 58},
+         {"a5", 61}, {"b5", 62}, {"c5", 63}, {"d5", 64}, {"e5", 65}, {"f5", 66}, {"g5", 67}, {"h5", 68},
+         {"a6", 71}, {"b6", 72}, {"c6", 73}, {"d6", 74}, {"e6", 75}, {"f6", 76}, {"g6", 77}, {"h6", 78},
+         {"a7", 81}, {"b7", 82}, {"c7", 83}, {"d7", 84}, {"e7", 85}, {"f7", 86}, {"g7", 87}, {"h7", 88},
+         {"a8", 91}, {"b8", 92}, {"c8", 93}, {"d8", 94}, {"e8", 95}, {"f8", 96}, {"g8", 97}, {"h8", 98}};
+
+//        switch(col)
+//        {
+//            case 'a':
+//                break;
+//            case 'b':
+//                break;
+//            case 'c':
+//                break;
+//            case 'd':
+//                break;
+//            case 'e':
+//                break;
+//            case 'f':
+//                break;
+//            case 'g':
+//                break;
+//            case 'h':
+//                break;
+//        }
+        en_passant_target_square = internal_format[square];
+    }
+
+
 }
 
 void GameState::make_move(Move& move)

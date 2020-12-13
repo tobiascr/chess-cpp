@@ -80,7 +80,8 @@ int main()
     game_state.load_FEN_string("5k2/1r1n4/8/1Qb5/1nK5/8/8/8 w - - 0 1");
 
     MoveGenerator generator;
-    std::vector<Move>& move_list = generator.get_moves(game_state);
+    std::vector<Move>& move_list =
+               generator.get_moves_no_castlings_only_queen_promotions(game_state);
 
     std::cout << "Number of moves: " << move_list.size() << std::endl;
 
@@ -93,5 +94,11 @@ int main()
         print_board(game_state);
     }
 
+    game_state.load_FEN_string("r3k2r/8/8/8/8/8/8/R3K2R w Kq a1 0 1");
+    std::cout << game_state.white_kingside_castling << std::endl;
+    std::cout << game_state.white_queenside_castling << std::endl;
+    std::cout << game_state.black_kingside_castling << std::endl;
+    std::cout << game_state.black_queenside_castling << std::endl;
+    std::cout << game_state.en_passant_target_square << std::endl;
     return 0;
 }
