@@ -77,7 +77,7 @@ void print_board(GameState& game_state)
 int main()
 {
     GameState game_state;
-    game_state.load_FEN_string("5k2/1r1n4/8/1Qb5/1nK5/8/8/8 w - - 0 1");
+    game_state.load_FEN_string("8/3p4/8/2P5/8/8/8/8 b - - 0 1");
 
     MoveGenerator generator;
     std::vector<Move>& move_list =
@@ -87,18 +87,15 @@ int main()
 
     for(Move move : move_list)
     {
+        std::cout << "Starting position:" << std::endl;
+        print_board(game_state);
         game_state.make_move(move);
         print_board(game_state);
-        std::cout << move.UCI_format() << std::endl << std::endl;
+        std::cout << "Move made: " << move.UCI_format() << std::endl << std::endl;
         game_state.undo_move(move);
-        print_board(game_state);
     }
+    std::cout << "Starting position:" << std::endl;
+    print_board(game_state);
 
-    game_state.load_FEN_string("r3k2r/8/8/8/8/8/8/R3K2R w Kq a1 0 1");
-    std::cout << game_state.white_kingside_castling << std::endl;
-    std::cout << game_state.white_queenside_castling << std::endl;
-    std::cout << game_state.black_kingside_castling << std::endl;
-    std::cout << game_state.black_queenside_castling << std::endl;
-    std::cout << game_state.en_passant_target_square << std::endl;
     return 0;
 }

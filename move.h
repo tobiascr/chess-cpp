@@ -13,6 +13,8 @@ enum MoveType {non_capture, capture, en_passant, double_pawn_push, promotion_to_
 class Move
 {
 public:
+    Move(MoveType type_, int from_square_, int to_square_);
+
     MoveType type;
     int from_square, to_square;
 

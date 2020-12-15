@@ -1,4 +1,3 @@
-#include <map>
 #include "game_state.h"
 
 namespace Color
@@ -185,49 +184,17 @@ void GameState::load_FEN_string(std::string FEN_string)
     }
     else
     {
-        char col = FEN_string[i];
-        char row = FEN_string[i + 1];
-
         std::string square = FEN_string.substr(i, 2);
-
-        std::map<std::string, int> internal_format =
-        {{"a1", 21}, {"b1", 22}, {"c1", 23}, {"d1", 24}, {"e1", 25}, {"f1", 26}, {"g1", 27}, {"h1", 28},
-         {"a2", 31}, {"b2", 32}, {"c2", 33}, {"d2", 34}, {"e2", 35}, {"f2", 36}, {"g2", 37}, {"h2", 38},
-         {"a3", 41}, {"b3", 42}, {"c3", 43}, {"d3", 44}, {"e3", 45}, {"f3", 46}, {"g3", 47}, {"h3", 48},
-         {"a4", 51}, {"b4", 52}, {"c4", 53}, {"d4", 54}, {"e4", 55}, {"f4", 56}, {"g4", 57}, {"h4", 58},
-         {"a5", 61}, {"b5", 62}, {"c5", 63}, {"d5", 64}, {"e5", 65}, {"f5", 66}, {"g5", 67}, {"h5", 68},
-         {"a6", 71}, {"b6", 72}, {"c6", 73}, {"d6", 74}, {"e6", 75}, {"f6", 76}, {"g6", 77}, {"h6", 78},
-         {"a7", 81}, {"b7", 82}, {"c7", 83}, {"d7", 84}, {"e7", 85}, {"f7", 86}, {"g7", 87}, {"h7", 88},
-         {"a8", 91}, {"b8", 92}, {"c8", 93}, {"d8", 94}, {"e8", 95}, {"f8", 96}, {"g8", 97}, {"h8", 98}};
-
-//        switch(col)
-//        {
-//            case 'a':
-//                break;
-//            case 'b':
-//                break;
-//            case 'c':
-//                break;
-//            case 'd':
-//                break;
-//            case 'e':
-//                break;
-//            case 'f':
-//                break;
-//            case 'g':
-//                break;
-//            case 'h':
-//                break;
-//        }
         en_passant_target_square = internal_format[square];
     }
-
-
 }
 
 void GameState::make_move(Move& move)
 {
-    player_in_turn = Color::opposite_color(player_in_turn);
+    int captured_pawn_square;
+    en_passant_target_square_history.push(en_passant_target_square);
+    en_passant_target_square = 0;
+
     switch(move.type)
     {
         case MoveType::non_capture:
@@ -239,6 +206,19 @@ void GameState::make_move(Move& move)
             number_of_captured_pieces++;
             board[move.to_square] = board[move.from_square];
             board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::double_pawn_push:
+            board[move.to_square] = board[move.from_square];
+            board[move.from_square].type = BoardItem::empty_square;
+            en_passant_target_square = move.to_square - 10 * player_in_turn;
+            break;
+        case MoveType::en_passant:
+            captured_pawn_square = move.to_square - 10 * player_in_turn;
+            captured_pieces[number_of_captured_pieces] = board[captured_pawn_square];
+            number_of_captured_pieces++;
+            board[move.to_square] = board[move.from_square];
+            board[move.from_square].type = BoardItem::empty_square;
+            board[captured_pawn_square].type = BoardItem::empty_square;
             break;
         case MoveType::white_kingside_castling:
             board[27] = board[25];
@@ -264,12 +244,65 @@ void GameState::make_move(Move& move)
             board[91].type = BoardItem::empty_square;
             board[95].type = BoardItem::empty_square;
             break;
+        case MoveType::promotion_to_queen:
+            board[move.to_square].type = BoardItem::queen;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_rook:
+            board[move.to_square].type = BoardItem::rook;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_bishop:
+            board[move.to_square].type = BoardItem::bishop;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_knight:
+            board[move.to_square].type = BoardItem::knight;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_capture_to_queen:
+            captured_pieces[number_of_captured_pieces] = board[move.to_square];
+            number_of_captured_pieces++;
+            board[move.to_square].type = BoardItem::queen;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_capture_to_rook:
+            captured_pieces[number_of_captured_pieces] = board[move.to_square];
+            number_of_captured_pieces++;
+            board[move.to_square].type = BoardItem::rook;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_capture_to_bishop:
+            captured_pieces[number_of_captured_pieces] = board[move.to_square];
+            number_of_captured_pieces++;
+            board[move.to_square].type = BoardItem::bishop;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_capture_to_knight:
+            captured_pieces[number_of_captured_pieces] = board[move.to_square];
+            number_of_captured_pieces++;
+            board[move.to_square].type = BoardItem::knight;
+            board[move.to_square].color = player_in_turn;
+            board[move.from_square].type = BoardItem::empty_square;
+            break;
     }
+    player_in_turn = Color::opposite_color(player_in_turn);
 }
 
 void GameState::undo_move(Move& move)
 {
+    int captured_pawn_square;
     player_in_turn = Color::opposite_color(player_in_turn);
+    en_passant_target_square = en_passant_target_square_history.top();
+    en_passant_target_square_history.pop();
+
     switch(move.type)
     {
         case MoveType::non_capture:
@@ -280,6 +313,17 @@ void GameState::undo_move(Move& move)
             number_of_captured_pieces--;
             board[move.from_square] = board[move.to_square];
             board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            break;
+        case MoveType::double_pawn_push:
+            board[move.from_square] = board[move.to_square];
+            board[move.to_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::en_passant:
+            number_of_captured_pieces--;
+            captured_pawn_square = move.to_square - 10 * player_in_turn;
+            board[captured_pawn_square] = captured_pieces[number_of_captured_pieces];
+            board[move.from_square] = board[move.to_square];
+            board[move.to_square].type = BoardItem::empty_square;
             break;
         case MoveType::white_kingside_castling:
             board[25] = board[27];
@@ -304,6 +348,50 @@ void GameState::undo_move(Move& move)
             board[91] = board[94];
             board[93].type = BoardItem::empty_square;
             board[94].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_queen:
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            board[move.to_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_rook:
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            board[move.to_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_bishop:
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            board[move.to_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_to_knight:
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            board[move.to_square].type = BoardItem::empty_square;
+            break;
+        case MoveType::promotion_capture_to_queen:
+            number_of_captured_pieces--;
+            board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            break;
+        case MoveType::promotion_capture_to_rook:
+            number_of_captured_pieces--;
+            board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            break;
+        case MoveType::promotion_capture_to_bishop:
+            number_of_captured_pieces--;
+            board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
+            break;
+        case MoveType::promotion_capture_to_knight:
+            number_of_captured_pieces--;
+            board[move.to_square] = captured_pieces[number_of_captured_pieces];
+            board[move.from_square].type = BoardItem::pawn;
+            board[move.from_square].color = player_in_turn;
             break;
     }
 }

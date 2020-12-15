@@ -1,6 +1,13 @@
 #include <map>
 #include "move.h"
 
+Move::Move(MoveType type_, int from_square_, int to_square_)
+{
+    type = type_;
+    from_square = from_square_;
+    to_square = to_square_;
+}
+
 std::string Move::UCI_format()
 {
     std::map<int, std::string> conventional_format =
