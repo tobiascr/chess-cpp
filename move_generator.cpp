@@ -3,6 +3,8 @@
 std::vector<Move>& MoveGenerator::
                    get_moves_no_castlings_only_queen_promotions(GameState& game_state)
 {
+    move_list.reserve(100);
+
     for(int r=20; r<=90; r+=10)
     {
         for(int c=1; c<=8; c++)
@@ -54,12 +56,12 @@ void MoveGenerator::generate_king_moves(GameState& game_state, int from_square)
         }
         if(game_state.board[to_square].type == BoardItem::empty_square)
         {
-            move_list.push_back(Move(MoveType::non_capture, from_square, to_square));
+            move_list.emplace_back(MoveType::non_capture, from_square, to_square);
             continue;
         }
         if(game_state.board[to_square].color != game_state.player_in_turn)
         {
-            move_list.push_back(Move(MoveType::capture, from_square, to_square));
+            move_list.emplace_back(MoveType::capture, from_square, to_square);
         }
     }
 }
@@ -97,14 +99,14 @@ void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square,
         {
             if(only_queen_promotions)
             {
-                move_list.push_back(Move(MoveType::promotion_to_queen, from_square, to_square));
+                move_list.emplace_back(MoveType::promotion_to_queen, from_square, to_square);
             }
             else
             {
-                move_list.push_back(Move(MoveType::promotion_to_queen, from_square, to_square));
-                move_list.push_back(Move(MoveType::promotion_to_rook, from_square, to_square));
-                move_list.push_back(Move(MoveType::promotion_to_bishop, from_square, to_square));
-                move_list.push_back(Move(MoveType::promotion_to_knight, from_square, to_square));
+                move_list.emplace_back(MoveType::promotion_to_queen, from_square, to_square);
+                move_list.emplace_back(MoveType::promotion_to_rook, from_square, to_square);
+                move_list.emplace_back(MoveType::promotion_to_bishop, from_square, to_square);
+                move_list.emplace_back(MoveType::promotion_to_knight, from_square, to_square);
             }
         }
         // Promotion captures
@@ -116,14 +118,14 @@ void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square,
             {
                 if(only_queen_promotions)
                 {
-                    move_list.push_back(Move(MoveType::promotion_capture_to_queen, from_square, to_square));
+                    move_list.emplace_back(MoveType::promotion_capture_to_queen, from_square, to_square);
                 }
                 else
                 {
-                    move_list.push_back(Move(MoveType::promotion_capture_to_queen, from_square, to_square));
-                    move_list.push_back(Move(MoveType::promotion_capture_to_rook, from_square, to_square));
-                    move_list.push_back(Move(MoveType::promotion_capture_to_bishop, from_square, to_square));
-                    move_list.push_back(Move(MoveType::promotion_capture_to_knight, from_square, to_square));
+                    move_list.emplace_back(MoveType::promotion_capture_to_queen, from_square, to_square);
+                    move_list.emplace_back(MoveType::promotion_capture_to_rook, from_square, to_square);
+                    move_list.emplace_back(MoveType::promotion_capture_to_bishop, from_square, to_square);
+                    move_list.emplace_back(MoveType::promotion_capture_to_knight, from_square, to_square);
                 }
             }
         }
@@ -134,14 +136,14 @@ void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square,
         to_square = from_square + push_distance;
         if(game_state.board[to_square].type == BoardItem::empty_square)
         {
-            move_list.push_back(Move(MoveType::non_capture, from_square, to_square));
+            move_list.emplace_back(MoveType::non_capture, from_square, to_square);
 
             if(row == initial_row)
             {
                 to_square += push_distance;
                 if(game_state.board[to_square].type == BoardItem::empty_square)
                 {
-                    move_list.push_back(Move(MoveType::double_pawn_push, from_square, to_square));
+                    move_list.emplace_back(MoveType::double_pawn_push, from_square, to_square);
                 }
             }
         }
@@ -154,7 +156,7 @@ void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square,
             {
                 if(game_state.board[to_square].color != game_state.player_in_turn)
                 {
-                    move_list.push_back(Move(MoveType::capture, from_square, to_square));
+                    move_list.emplace_back(MoveType::capture, from_square, to_square);
                 }
             }
         }
@@ -165,11 +167,11 @@ void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square,
             {
                 if(from_square + push_distance - 1 == game_state.en_passant_target_square)
                 {
-                    move_list.push_back(Move(MoveType::en_passant, from_square, game_state.en_passant_target_square));
+                    move_list.emplace_back(MoveType::en_passant, from_square, game_state.en_passant_target_square);
                 }
                 else if(from_square + push_distance + 1 == game_state.en_passant_target_square)
                 {
-                    move_list.push_back(Move(MoveType::en_passant, from_square, game_state.en_passant_target_square));
+                    move_list.emplace_back(MoveType::en_passant, from_square, game_state.en_passant_target_square);
                 }
             }
         }
@@ -190,12 +192,12 @@ void MoveGenerator::generate_knight_moves(GameState& game_state, int from_square
         }
         if(game_state.board[to_square].type == BoardItem::empty_square)
         {
-            move_list.push_back(Move(MoveType::non_capture, from_square, to_square));
+            move_list.emplace_back(MoveType::non_capture, from_square, to_square);
             continue;
         }
         if(game_state.board[to_square].color != game_state.player_in_turn)
         {
-            move_list.push_back(Move(MoveType::capture, from_square, to_square));
+            move_list.emplace_back(MoveType::capture, from_square, to_square);
         }
     }
 }
@@ -211,7 +213,7 @@ void MoveGenerator::generate_bishop_moves(GameState& game_state, int from_square
         {
             if(game_state.board[to_square].type == BoardItem::empty_square)
             {
-                move_list.push_back(Move(MoveType::non_capture, from_square, to_square));
+                move_list.emplace_back(MoveType::non_capture, from_square, to_square);
                 to_square += change;
                 continue;
             }
@@ -221,7 +223,7 @@ void MoveGenerator::generate_bishop_moves(GameState& game_state, int from_square
             }
             if(game_state.board[to_square].color != game_state.player_in_turn)
             {
-                move_list.push_back(Move(MoveType::capture, from_square, to_square));
+                move_list.emplace_back(MoveType::capture, from_square, to_square);
             }
             break;
         }
@@ -239,7 +241,7 @@ void MoveGenerator::generate_rook_moves(GameState& game_state, int from_square)
         {
             if(game_state.board[to_square].type == BoardItem::empty_square)
             {
-                move_list.push_back(Move(MoveType::non_capture, from_square, to_square));
+                move_list.emplace_back(MoveType::non_capture, from_square, to_square);
                 to_square += change;
                 continue;
             }
@@ -249,7 +251,7 @@ void MoveGenerator::generate_rook_moves(GameState& game_state, int from_square)
             }
             if(game_state.board[to_square].color != game_state.player_in_turn)
             {
-                move_list.push_back(Move(MoveType::capture, from_square, to_square));
+                move_list.emplace_back(MoveType::capture, from_square, to_square);
             }
             break;
         }
