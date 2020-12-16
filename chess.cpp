@@ -110,30 +110,79 @@ if favorable for the other player.*/
     return value * game_state.player_in_turn;
 }
 
-int main()
+int negamax(GameState& game_state, const int depth)
 {
-    GameState game_state;
-    game_state.load_FEN_string("rnbk2n1/ppppbppr/7p/4p1B1/4P3/3P4/PPP2PPP/RN1QKBNR w KQq - 0 1");
+    int value = position_value(game_state);
+
+    if(depth == 0 or value < -500)
+    {
+        return value;
+    }
 
     MoveGenerator generator;
     std::vector<Move>& move_list =
                generator.get_moves_no_castlings_only_queen_promotions(game_state);
 
-    std::cout << "Number of moves: " << move_list.size() << std::endl;
+    if(move_list.size() == 0)
+    {
+        return 0;
+    }
+
+    int best_value = -10000;
+    for(Move move : move_list)
+    {
+        game_state.make_move(move);
+        value = -negamax(game_state, depth - 1);
+        game_state.undo_move(move);
+        if(value > best_value)
+        {
+            best_value = value;
+        }
+    }
+
+    return best_value;
+}
+
+std::string root_negamax(GameState& game_state, const int depth)
+{
+    MoveGenerator generator;
+    std::vector<Move>& move_list =
+               generator.get_moves_no_castlings_only_queen_promotions(game_state);
+
+    if(move_list.size() == 0)
+    {
+        return "No moves found.";
+    }
+
+    int best_value = -10000;
+
+    Move best_move = move_list[0];
 
     for(Move move : move_list)
     {
-        std::cout << "Starting position:" << std::endl;
-        print_board(game_state);
         game_state.make_move(move);
-        print_board(game_state);
-        std::cout << "Move made: " << move.UCI_format() << std::endl << std::endl;
+        int value = -negamax(game_state, depth - 1);
         game_state.undo_move(move);
+        if(value > best_value)
+        {
+            best_value = value;
+            best_move = move;
+        }
     }
-    std::cout << "Starting position:" << std::endl;
-    print_board(game_state);
 
-    std::cout << "Position value: " << position_value(game_state) << std::endl;
+    return "bestmove " + best_move.UCI_format() + " score " + std::to_string(best_value);
+}
+
+int main()
+{
+    GameState game_state;
+    std::string FEN_string;
+    std::cout << "FEN: ";
+    std::getline(std::cin, FEN_string);
+    std::cout << std::endl;
+    game_state.load_FEN_string(FEN_string);
+    print_board(game_state);
+    std::cout << root_negamax(game_state, 5) << std::endl;
 
     return 0;
 }

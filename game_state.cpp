@@ -35,100 +35,96 @@ void GameState::load_FEN_string(std::string FEN_string)
     // Load position
     while(FEN_string[i] != ' ')
     {
-        char c = FEN_string[i];
-        if(c == 'P')
+        switch(FEN_string[i])
         {
-            board[square].type = BoardItem::pawn;
-            board[square].color = Color::white;
+            case 'P':
+                board[square].type = BoardItem::pawn;
+                board[square].color = Color::white;
+                square++;
+                break;
+            case 'p':
+                board[square].type = BoardItem::pawn;
+                board[square].color = Color::black;
+                square++;
+                break;
+            case 'N':
+                board[square].type = BoardItem::knight;
+                board[square].color = Color::white;
+                square++;
+                break;
+            case 'n':
+                board[square].type = BoardItem::knight;
+                board[square].color = Color::black;
+                square++;
+                break;
+            case 'B':
+                board[square].type = BoardItem::bishop;
+                board[square].color = Color::white;
+                square++;
+                break;
+            case 'b':
+                board[square].type = BoardItem::bishop;
+                board[square].color = Color::black;
+                square++;
+                break;
+            case  'R':
+                board[square].type = BoardItem::rook;
+                board[square].color = Color::white;
+                square++;
+                break;
+            case 'r':
+                board[square].type = BoardItem::rook;
+                board[square].color = Color::black;
+                square++;
+                break;
+            case 'Q':
+                board[square].type = BoardItem::queen;
+                board[square].color = Color::white;
+                square++;
+                break;
+            case 'q':
+                board[square].type = BoardItem::queen;
+                board[square].color = Color::black;
+                square++;
+                break;
+            case 'K':
+                board[square].type = BoardItem::king;
+                board[square].color = Color::white;
+                square++;
+                break;
+            case 'k':
+                board[square].type = BoardItem::king;
+                board[square].color = Color::black;
+                square++;
+                break;
+            case '/':
+                square -= 18;
+                break;
+            case '1':
+                square += 1;
+                break;
+            case '2':
+                square += 2;
+                break;
+            case '3':
+                square += 3;
+                break;
+            case '4':
+                square += 4;
+                break;
+            case '5':
+                square += 5;
+                break;
+            case '6':
+                square += 6;
+                break;
+            case '7':
+                square += 7;
+                break;
+            case '8':
+                square += 8;
+                break;
         }
-        if(c == 'p')
-        {
-            board[square].type = BoardItem::pawn;
-            board[square].color = Color::black;
-        }
-        if(c == 'N')
-        {
-            board[square].type = BoardItem::knight;
-            board[square].color = Color::white;
-        }
-        if(c == 'n')
-        {
-            board[square].type = BoardItem::knight;
-            board[square].color = Color::black;
-        }
-        if(c == 'B')
-        {
-            board[square].type = BoardItem::bishop;
-            board[square].color = Color::white;
-        }
-        if(c == 'b')
-        {
-            board[square].type = BoardItem::bishop;
-            board[square].color = Color::black;
-        }
-        if(c == 'R')
-        {
-            board[square].type = BoardItem::rook;
-            board[square].color = Color::white;
-        }
-        if(c == 'r')
-        {
-            board[square].type = BoardItem::rook;
-            board[square].color = Color::black;
-        }
-        if(c == 'Q')
-        {
-            board[square].type = BoardItem::queen;
-            board[square].color = Color::white;
-        }
-        if(c == 'q')
-        {
-            board[square].type = BoardItem::queen;
-            board[square].color = Color::black;
-        }
-        if(c == 'K')
-        {
-            board[square].type = BoardItem::king;
-            board[square].color = Color::white;
-        }
-        if(c == 'k')
-        {
-            board[square].type = BoardItem::king;
-            board[square].color = Color::black;
-        }
-        if(c == '/')
-        {
-            square -= 19;
-        }
-        if(c == '2')
-        {
-            square++;
-        }
-        if(c == '3')
-        {
-            square += 2;
-        }
-        if(c == '4')
-        {
-            square += 3;
-        }
-        if(c == '5')
-        {
-            square += 4;
-        }
-        if(c == '6')
-        {
-            square += 5;
-        }
-        if(c == '7')
-        {
-            square += 6;
-        }
-        if(c == '8')
-        {
-            square += 7;
-        }
-        square++;
         i++;
     }
 
