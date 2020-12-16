@@ -110,10 +110,11 @@ if favorable for the other player.*/
     return value * game_state.player_in_turn;
 }
 
-int negamax(GameState& game_state, const int depth)
+int negamax(GameState& game_state, const int depth, int alpha, int beta)
 {
     int value = position_value(game_state);
 
+    // If full depth is reached or the king is captured.
     if(depth == 0 or value < -500)
     {
         return value;
@@ -128,19 +129,22 @@ int negamax(GameState& game_state, const int depth)
         return 0;
     }
 
-    int best_value = -10000;
     for(Move move : move_list)
     {
         game_state.make_move(move);
-        value = -negamax(game_state, depth - 1);
+        value = -negamax(game_state, depth - 1, -beta, -alpha);
         game_state.undo_move(move);
-        if(value > best_value)
+        if (value >= beta)
         {
-            best_value = value;
+            return beta;
+        }
+        if(value > alpha)
+        {
+            alpha = value;
         }
     }
 
-    return best_value;
+    return alpha;
 }
 
 std::string root_negamax(GameState& game_state, const int depth)
@@ -154,23 +158,23 @@ std::string root_negamax(GameState& game_state, const int depth)
         return "No moves found.";
     }
 
-    int best_value = -10000;
-
+    int alpha = -10000;
+    int beta = 10000;
     Move best_move = move_list[0];
 
     for(Move move : move_list)
     {
         game_state.make_move(move);
-        int value = -negamax(game_state, depth - 1);
+        int value = -negamax(game_state, depth - 1, -beta, -alpha);
         game_state.undo_move(move);
-        if(value > best_value)
+        if(value > alpha)
         {
-            best_value = value;
+            alpha = value;
             best_move = move;
         }
     }
 
-    return "bestmove " + best_move.UCI_format() + " score " + std::to_string(best_value);
+    return "bestmove " + best_move.UCI_format() + " score " + std::to_string(alpha);
 }
 
 int main()
@@ -182,7 +186,7 @@ int main()
     std::cout << std::endl;
     game_state.load_FEN_string(FEN_string);
     print_board(game_state);
-    std::cout << root_negamax(game_state, 5) << std::endl;
+    std::cout << root_negamax(game_state, 6) << std::endl;
 
     return 0;
 }
