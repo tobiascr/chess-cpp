@@ -19,20 +19,20 @@ std::vector<Move>& MoveGenerator::
                         case BoardItem::king:
                             generate_king_moves(game_state, square);
                             break;
-                        case BoardItem::pawn:
-                            generate_pawn_moves(game_state, square, true);
-                            break;
-                        case BoardItem::knight:
-                            generate_knight_moves(game_state, square);
-                            break;
-                        case BoardItem::bishop:
-                            generate_bishop_moves(game_state, square);
+                        case BoardItem::queen:
+                            generate_queen_moves(game_state, square);
                             break;
                         case BoardItem::rook:
                             generate_rook_moves(game_state, square);
                             break;
-                        case BoardItem::queen:
-                            generate_queen_moves(game_state, square);
+                        case BoardItem::bishop:
+                            generate_bishop_moves(game_state, square);
+                            break;
+                        case BoardItem::knight:
+                            generate_knight_moves(game_state, square);
+                            break;
+                        case BoardItem::pawn:
+                            generate_pawn_moves(game_state, square, true);
                             break;
                     }
                 }

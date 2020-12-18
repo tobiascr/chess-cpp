@@ -110,6 +110,33 @@ if favorable for the other player.*/
     return value * game_state.player_in_turn;
 }
 
+void move_sort(std::vector<Move>& move_list)
+{
+    std::vector<Move> list_1, list_2;
+
+    for(Move move : move_list)
+    {
+        if(move.type == MoveType::capture)
+        {
+            list_1.push_back(move);
+        }
+        else
+        {
+            list_2.push_back(move);
+        }
+    }
+
+    for(int i=0; i< list_1.size(); i++)
+    {
+        move_list[i] = list_1[i];
+    }
+
+    for(int i=0; i< list_2.size(); i++)
+    {
+        move_list[i + list_1.size()] = list_2[i];
+    }
+}
+
 int negamax(GameState& game_state, const int depth, int alpha, int beta)
 {
     int value = position_value(game_state);
@@ -128,6 +155,8 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     {
         return 0;
     }
+
+   move_sort(move_list);
 
     for(Move move : move_list)
     {
@@ -157,6 +186,8 @@ std::string root_negamax(GameState& game_state, const int depth)
     {
         return "No moves found.";
     }
+
+    move_sort(move_list);
 
     int alpha = -10000;
     int beta = 10000;
