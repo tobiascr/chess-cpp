@@ -114,7 +114,8 @@ void MoveGenerator::generate_pawn_moves(GameState& game_state, int from_square,
         {
             to_square = from_square + push_distance + d;
             if(game_state.board[to_square].type != BoardItem::empty_square
-               and game_state.board[to_square].type != BoardItem::outside_of_board)
+               and game_state.board[to_square].type != BoardItem::outside_of_board
+               and game_state.board[to_square].color != game_state.player_in_turn)
             {
                 if(only_queen_promotions)
                 {
