@@ -1,7 +1,6 @@
 ## chess-cpp
 
-A chess engine made with C++. The user can type in a position in FEN format and get a
-best move returned.
+A UCI chess engine made with C++.
 
 ### Installation on Linux
 
