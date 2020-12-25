@@ -152,14 +152,14 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
 
     MoveGenerator generator;
     std::vector<Move>& move_list =
-               generator.get_moves_no_castlings_only_queen_promotions(game_state);
+               generator.get_pseudo_legal_moves_no_castlings_only_queen_promotions(game_state);
 
     if(move_list.size() == 0)
     {
         return 0;
     }
 
-   move_sort(move_list);
+    move_sort(move_list);
 
     for(Move move : move_list)
     {

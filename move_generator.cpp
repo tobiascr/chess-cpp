@@ -3,6 +3,29 @@
 std::vector<Move>& MoveGenerator::
                    get_moves_no_castlings_only_queen_promotions(GameState& game_state)
 {
+    // Generate pseudo legal moves to move_list
+    get_pseudo_legal_moves_no_castlings_only_queen_promotions(game_state);
+
+    std::vector<Move> pseudo_legal_move_list = move_list;
+    std::vector<Move> legal_move_list;
+
+    for(Move move : pseudo_legal_move_list)
+    {
+        game_state.make_move(move);
+        if(not in_check(game_state))
+        {
+            legal_move_list.push_back(move);
+        }
+        game_state.undo_move(move);
+    }
+
+    move_list = legal_move_list;
+    return move_list;
+}
+
+std::vector<Move>& MoveGenerator::
+                   get_pseudo_legal_moves_no_castlings_only_queen_promotions(GameState& game_state)
+{
     move_list.reserve(100);
 
     for(int r=20; r<=90; r+=10)
@@ -42,6 +65,22 @@ std::vector<Move>& MoveGenerator::
 
     return move_list;
 }
+
+bool MoveGenerator::in_check(GameState& game_state)
+{
+    // Generate pseudo legal moves to move_list
+    move_list.clear();
+    get_pseudo_legal_moves_no_castlings_only_queen_promotions(game_state);
+    for(Move move : move_list)
+    {
+        if(game_state.board[move.to_square].type == BoardItem::king)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 void MoveGenerator::generate_king_moves(GameState& game_state, int from_square)
 {
