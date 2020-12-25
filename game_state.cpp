@@ -398,21 +398,38 @@ void GameState::make_move(std::string uci_format_move)
     }
 
     // If promotion
-    if(uci_format_move.size() == 5)
+    uci_format_move.erase(0, 4);
+    if(uci_format_move.size() > 0)
     {
-        if(uci_format_move[5] == 'q')
+        if(uci_format_move.find('q') != std::string::npos)
         {
             board[to_square].type = BoardItem::queen;
         }
-        if(uci_format_move[5] == 'r')
+        if(uci_format_move.find('Q') != std::string::npos)
+        {
+            board[to_square].type = BoardItem::queen;
+        }
+        if(uci_format_move.find('r') != std::string::npos)
         {
             board[to_square].type = BoardItem::rook;
         }
-        if(uci_format_move[5] == 'b')
+        if(uci_format_move.find('R') != std::string::npos)
+        {
+            board[to_square].type = BoardItem::rook;
+        }
+        if(uci_format_move.find('b') != std::string::npos)
         {
             board[to_square].type = BoardItem::bishop;
         }
-        if(uci_format_move[5] == 'n')
+        if(uci_format_move.find('B') != std::string::npos)
+        {
+            board[to_square].type = BoardItem::bishop;
+        }
+        if(uci_format_move.find('n') != std::string::npos)
+        {
+            board[to_square].type = BoardItem::knight;
+        }
+        if(uci_format_move.find('N') != std::string::npos)
         {
             board[to_square].type = BoardItem::knight;
         }

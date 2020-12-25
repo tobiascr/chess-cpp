@@ -33,7 +33,7 @@ test_FEN("1r3qrk/p1b4p/4pPpQ/2p3P1/P1PpP1R1/3n3P/8/2B2RK1 w - - 4 32")
 
 # Blacks king is in check but might be tempted to capture a queen instead of moving
 # away from the check.
-8/2R5/1R3n2/7Q/6p1/8/5K2/1k6 b - - 0 1
+test_FEN("8/2R5/1R3n2/7Q/6p1/8/5K2/1k6 b - - 0 1")
 
 print()
 print("Total time:", total_time)
