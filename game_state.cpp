@@ -33,7 +33,7 @@ void GameState::load_FEN_string(std::string FEN_string)
     int square = 91;
 
     // Load position
-    while(FEN_string[i] != ' ')
+    while(FEN_string[i] != ' ' or square == 91) // This allows initial spaces.
     {
         switch(FEN_string[i])
         {
@@ -290,6 +290,133 @@ void GameState::make_move(Move& move)
             break;
     }
     player_in_turn = Color::opposite_color(player_in_turn);
+}
+
+void GameState::make_move(std::string uci_format_move)
+{
+    player_in_turn = Color::opposite_color(player_in_turn);
+
+    std::string conventional_format_from_square = uci_format_move.substr(0, 2);
+    std::string conventional_format_to_square = uci_format_move.substr(2, 2);
+
+    int from_square = internal_format[conventional_format_from_square];
+    int to_square = internal_format[conventional_format_to_square];
+
+    board[to_square] = board[from_square];
+    board[from_square].type = BoardItem::empty_square;
+
+    if(board[to_square].type == BoardItem::pawn)
+    {
+        // If en passant
+        if(to_square == en_passant_target_square)
+        {
+            board[to_square - 10 * board[to_square].color].type = BoardItem::empty_square;
+        }
+    }
+
+    en_passant_target_square = 0;
+
+    if(board[to_square].type == BoardItem::pawn)
+    {
+        // If white double pawn push
+        if(to_square - from_square == 20)
+        {
+            en_passant_target_square = to_square - 10;
+        }
+
+        // If black double pawn push
+        if(to_square - from_square == -20)
+        {
+            en_passant_target_square = to_square + 10;
+        }
+    }
+
+    // Update castling rights
+    if(conventional_format_from_square == "a1")
+    {
+        white_queenside_castling = false;
+    }
+    if(conventional_format_to_square == "a1")
+    {
+        white_queenside_castling = false;
+    }
+    if(conventional_format_from_square == "e1")
+    {
+        white_kingside_castling = false;
+        white_queenside_castling = false;
+    }
+    if(conventional_format_from_square == "h1")
+    {
+        white_kingside_castling = false;
+    }
+    if(conventional_format_to_square == "h1")
+    {
+        white_kingside_castling = false;
+    }
+    if(conventional_format_from_square == "a8")
+    {
+        black_queenside_castling = false;
+    }
+    if(conventional_format_to_square == "a8")
+    {
+        black_queenside_castling = false;
+    }
+    if(conventional_format_from_square == "e8")
+    {
+        black_kingside_castling = false;
+        black_queenside_castling = false;
+    }
+    if(conventional_format_from_square == "h8")
+    {
+        black_kingside_castling = false;
+    }
+    if(conventional_format_to_square == "h8")
+    {
+        black_kingside_castling = false;
+    }
+
+    // If castling also move the rook.
+    if(uci_format_move == "e1g1")
+    {
+      board[26] = board[28];
+      board[28].type = BoardItem::empty_square;
+    }
+    if(uci_format_move == "e1c1")
+    {
+      board[24] = board[21];
+      board[21].type = BoardItem::empty_square;
+    }
+    if(uci_format_move == "e8g8")
+    {
+      board[96] = board[98];
+      board[98].type = BoardItem::empty_square;
+    }
+    if(uci_format_move == "e8c8")
+    {
+      board[94] = board[91];
+      board[91].type = BoardItem::empty_square;
+    }
+
+    // If promotion
+    if(uci_format_move.size() == 5)
+    {
+        if(uci_format_move[5] == 'q')
+        {
+            board[to_square].type = BoardItem::queen;
+        }
+        if(uci_format_move[5] == 'r')
+        {
+            board[to_square].type = BoardItem::rook;
+        }
+        if(uci_format_move[5] == 'b')
+        {
+            board[to_square].type = BoardItem::bishop;
+        }
+        if(uci_format_move[5] == 'n')
+        {
+            board[to_square].type = BoardItem::knight;
+        }
+    }
 }
 
 void GameState::undo_move(Move& move)

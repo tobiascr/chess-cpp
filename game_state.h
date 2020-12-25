@@ -52,6 +52,9 @@ public:
 
     void make_move(Move& move);
 
+    void make_move(std::string uci_format_move);
+    /* A way of making a move intended for setting up the board before a search.*/
+
     void undo_move(Move& move);
 
     BoardItem board[120];

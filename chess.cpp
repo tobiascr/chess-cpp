@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <vector>
 #include "move.h"
 #include "game_state.h"
 #include "move_generator.h"
@@ -74,9 +76,10 @@ void print_board(GameState& game_state)
     std::cout << std::endl;
 }
 
+
 int position_value(GameState& game_state)
 /* Give a positive value for positions favorable for the player in turn and negative
-if favorable for the other player.*/
+if favorable for the other player. The value is given in centipawns.*/
 {
     int value = 0;
 
@@ -87,22 +90,22 @@ if favorable for the other player.*/
             switch(game_state.board[r+c].type)
             {
                 case BoardItem::king:
-                    value += 1000 * game_state.board[r+c].color;
+                    value += 100000 * game_state.board[r+c].color;
                     break;
                 case BoardItem::queen:
-                    value += 9 * game_state.board[r+c].color;
+                    value += 900 * game_state.board[r+c].color;
                     break;
                 case BoardItem::rook:
-                    value += 5 * game_state.board[r+c].color;
+                    value += 500 * game_state.board[r+c].color;
                     break;
                 case BoardItem::bishop:
-                    value += 3 * game_state.board[r+c].color;
+                    value += 300 * game_state.board[r+c].color;
                     break;
                 case BoardItem::knight:
-                    value += 3 * game_state.board[r+c].color;
+                    value += 300 * game_state.board[r+c].color;
                     break;
                 case BoardItem::pawn:
-                    value += 1 * game_state.board[r+c].color;
+                    value += 100 * game_state.board[r+c].color;
                     break;
             }
         }
@@ -142,7 +145,7 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     int value = position_value(game_state);
 
     // If full depth is reached or the king is captured.
-    if(depth == 0 or value < -500)
+    if(depth == 0 or value < -50000)
     {
         return value;
     }
@@ -189,8 +192,8 @@ std::string root_negamax(GameState& game_state, const int depth)
 
     move_sort(move_list);
 
-    int alpha = -10000;
-    int beta = 10000;
+    int alpha = -100000;
+    int beta = 100000;
     Move best_move = move_list[0];
 
     for(Move move : move_list)
@@ -205,19 +208,107 @@ std::string root_negamax(GameState& game_state, const int depth)
         }
     }
 
-    return "bestmove " + best_move.UCI_format() + " score " + std::to_string(alpha);
+    return "bestmove " + best_move.UCI_format();
+}
+
+bool substring_in_string(std::string& string, std::string substring)
+/* True if and only if substring is in the string.*/
+{
+    return string.find(substring) != std::string::npos;
+}
+
+void remove_substring(std::string& string, std::string substring)
+/* Remove the first occurence of substring from the string.*/
+{
+    string.erase(string.find(substring), substring.size());
+}
+
+std::vector<std::string> split(std::string string)
+/* Return a list of strings found in the given string that are separated by
+whitespaces.*/
+{
+    std::stringstream s;
+    s << string;
+    std::string substring;
+    std::vector<std::string> substrings;
+    while(s >> substring)
+    {
+        substrings.push_back(substring);
+    }
+    return substrings;
+}
+
+void UCI_loop()
+{
+    GameState game_state;
+    std::string input, line;
+    std::string FEN_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    std::cout << "id name chess-cpp" << std::endl;
+    std::cout << "id author Tobias C" << std::endl;
+    std::cout << "uciok" << std::endl;
+
+    while(true)
+    {
+        std::cin >> input;
+        if(input == "position")
+        {
+            std::getline(std::cin, line);
+            if(substring_in_string(line, "startpos"))
+            {
+                FEN_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+                game_state.load_FEN_string(FEN_string);
+            }
+            if(substring_in_string(line, "fen"))
+            {
+                remove_substring(line, "fen");
+                game_state.load_FEN_string(line);
+            }
+            if(substring_in_string(line, "moves"))
+            {
+                // Remove everything in the string to the left of and including "moves".
+                line.erase(0, line.find("moves") + 5);
+                std::vector<std::string>  move_list = split(line);
+                for(std::string uci_format_move : move_list)
+                {
+                    game_state.make_move(uci_format_move);
+                }
+            }
+        }
+        else if(input == "isready")
+        {
+            std::cout << "readyok" << std::endl;
+        }
+        else if(input == "go")
+        {
+            std::cout << root_negamax(game_state, 6) << std::endl;
+        }
+        else if(input == "quit")
+        {
+            break;
+        }
+    }
 }
 
 int main()
 {
-    GameState game_state;
-    std::string FEN_string;
-    std::cout << "FEN: ";
-    std::getline(std::cin, FEN_string);
+    std::string input;
+    std::cout << "Type uci for UCI-mode, or give a FEN-string to compute a move:" << std::endl;
     std::cout << std::endl;
-    game_state.load_FEN_string(FEN_string);
-    print_board(game_state);
-    std::cout << root_negamax(game_state, 6) << std::endl;
+    std::cout << "Input: ";
+    std::getline(std::cin, input);
+
+    if(input == "uci")
+    {
+        UCI_loop();
+    }
+    else
+    {
+        GameState game_state;
+        game_state.load_FEN_string(input);
+        std::cout << std::endl;
+        print_board(game_state);
+        std::cout << root_negamax(game_state, 6) << std::endl;
+    }
 
     return 0;
 }

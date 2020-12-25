@@ -28,5 +28,12 @@ test_FEN("r4rk1/1b2q1p1/2n1p2p/1Qb1Pp2/3p1P2/P4N1N/2PB2PP/R4R1K b - - 2 21")
 # Lichess puzzle, best move: e8e1
 test_FEN("k3r2r/p2Q4/2p4p/6p1/1R3pq1/2P5/PP3P1P/3R3K b - - 13 29")
 
+# Lichess puzzle, best move: h6h7
+test_FEN("1r3qrk/p1b4p/4pPpQ/2p3P1/P1PpP1R1/3n3P/8/2B2RK1 w - - 4 32")
+
+# Blacks king is in check but might be tempted to capture a queen instead of moving
+# away from the check.
+8/2R5/1R3n2/7Q/6p1/8/5K2/1k6 b - - 0 1
+
 print()
 print("Total time:", total_time)

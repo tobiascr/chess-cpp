@@ -32,6 +32,11 @@ std::string Move::UCI_format()
         return from_to_string;
     }
 
+    if(type == double_pawn_push)
+    {
+        return from_to_string;
+    }
+
     if(type == en_passant)
     {
         return from_to_string;
