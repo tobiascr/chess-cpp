@@ -81,7 +81,6 @@ bool MoveGenerator::in_check(GameState& game_state)
     return false;
 }
 
-
 void MoveGenerator::generate_king_moves(GameState& game_state, int from_square)
 {
     const int changes[8] = {9, 10, 11, 1, - 9, - 10, -11, -1};
