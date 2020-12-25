@@ -378,58 +378,41 @@ void GameState::make_move(std::string uci_format_move)
     // If castling also move the rook.
     if(uci_format_move == "e1g1")
     {
-      board[26] = board[28];
-      board[28].type = BoardItem::empty_square;
+        board[26] = board[28];
+        board[28].type = BoardItem::empty_square;
     }
     if(uci_format_move == "e1c1")
     {
-      board[24] = board[21];
-      board[21].type = BoardItem::empty_square;
+        board[24] = board[21];
+        board[21].type = BoardItem::empty_square;
     }
     if(uci_format_move == "e8g8")
     {
-      board[96] = board[98];
-      board[98].type = BoardItem::empty_square;
+        board[96] = board[98];
+        board[98].type = BoardItem::empty_square;
     }
     if(uci_format_move == "e8c8")
     {
-      board[94] = board[91];
-      board[91].type = BoardItem::empty_square;
+        board[94] = board[91];
+        board[91].type = BoardItem::empty_square;
     }
 
     // If promotion
-    uci_format_move.erase(0, 4);
-    if(uci_format_move.size() > 0)
+    if(uci_format_move.size() == 5)
     {
-        if(uci_format_move.find('q') != std::string::npos)
+        if(uci_format_move[4] == 'q')
         {
             board[to_square].type = BoardItem::queen;
         }
-        if(uci_format_move.find('Q') != std::string::npos)
-        {
-            board[to_square].type = BoardItem::queen;
-        }
-        if(uci_format_move.find('r') != std::string::npos)
+        if(uci_format_move[4] == 'r')
         {
             board[to_square].type = BoardItem::rook;
         }
-        if(uci_format_move.find('R') != std::string::npos)
-        {
-            board[to_square].type = BoardItem::rook;
-        }
-        if(uci_format_move.find('b') != std::string::npos)
+        if(uci_format_move[4] == 'b')
         {
             board[to_square].type = BoardItem::bishop;
         }
-        if(uci_format_move.find('B') != std::string::npos)
-        {
-            board[to_square].type = BoardItem::bishop;
-        }
-        if(uci_format_move.find('n') != std::string::npos)
-        {
-            board[to_square].type = BoardItem::knight;
-        }
-        if(uci_format_move.find('N') != std::string::npos)
+        if(uci_format_move[4] == 'n')
         {
             board[to_square].type = BoardItem::knight;
         }
