@@ -1,9 +1,13 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <random>
+#include <algorithm>
 #include "move.h"
 #include "game_state.h"
 #include "move_generator.h"
+
+std::mt19937 random_generator;
 
 void print_board_item(BoardItem board_item)
 {
@@ -116,6 +120,9 @@ if favorable for the other player. The value is given in centipawns.*/
 void move_sort(std::vector<Move>& move_list)
 {
     std::vector<Move> list_1, list_2;
+
+    // Creating some randomness by shuffling the list before sorting it.
+    std::shuffle(move_list.begin(), move_list.end(), random_generator);
 
     for(Move move : move_list)
     {
@@ -291,6 +298,9 @@ void UCI_loop()
 
 int main()
 {
+    std::random_device rd;
+    random_generator.seed(rd());
+
     std::string input;
     std::cout << "Type uci for UCI-mode, or give a FEN-string to compute a move:" << std::endl;
     std::cout << std::endl;
