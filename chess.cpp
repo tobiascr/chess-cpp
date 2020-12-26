@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <chrono>
 #include <random>
 #include <algorithm>
 #include "move.h"
@@ -154,6 +155,10 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     // If full depth is reached or the king is captured.
     if(depth == 0 or value < -50000)
     {
+        if(value < -50000)
+        {
+            return value - depth;
+        }
         return value;
     }
 
@@ -187,6 +192,7 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
 }
 
 std::string root_negamax(GameState& game_state, const int depth)
+// Return a best move.
 {
     MoveGenerator generator;
     std::vector<Move>& move_list =
@@ -199,8 +205,8 @@ std::string root_negamax(GameState& game_state, const int depth)
 
     move_sort(move_list);
 
-    int alpha = -100000;
-    int beta = 100000;
+    int alpha = -1000000;
+    int beta = 1000000;
     Move best_move = move_list[0];
 
     for(Move move : move_list)
@@ -215,7 +221,24 @@ std::string root_negamax(GameState& game_state, const int depth)
         }
     }
 
-    return "bestmove " + best_move.UCI_format();
+    std::cout << "info depth " << depth << " score cp " << alpha << std::endl;
+    return best_move.UCI_format();
+}
+
+void iterative_deepening(GameState& game_state, int max_time_milliseconds)
+{
+    std::string best_move;
+    std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point t1;
+    int depth = 1;
+
+    while(std::chrono::steady_clock::now() - t0 <
+          std::chrono::milliseconds(max_time_milliseconds))
+    {
+        best_move = root_negamax(game_state, depth);
+        depth++;
+    }
+    std::cout << "bestmove " + best_move << std::endl;
 }
 
 bool substring_in_string(std::string& string, std::string substring)
@@ -274,7 +297,7 @@ void UCI_loop()
             {
                 // Remove everything in the string to the left of and including "moves".
                 line.erase(0, line.find("moves") + 5);
-                std::vector<std::string>  move_list = split(line);
+                std::vector<std::string> move_list = split(line);
                 for(std::string uci_format_move : move_list)
                 {
                     game_state.make_move(uci_format_move);
@@ -287,7 +310,7 @@ void UCI_loop()
         }
         else if(input == "go")
         {
-            std::cout << root_negamax(game_state, 6) << std::endl;
+            iterative_deepening(game_state, 100);
         }
         else if(input == "quit")
         {
@@ -317,7 +340,7 @@ int main()
         game_state.load_FEN_string(input);
         std::cout << std::endl;
         print_board(game_state);
-        std::cout << root_negamax(game_state, 6) << std::endl;
+        iterative_deepening(game_state, 100);
     }
 
     return 0;
