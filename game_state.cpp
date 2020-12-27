@@ -518,3 +518,17 @@ void GameState::undo_move(Move& move)
             break;
     }
 }
+
+void GameState::make_null_move()
+{
+    player_in_turn = Color::opposite_color(player_in_turn);
+    en_passant_target_square_history.push(en_passant_target_square);
+    en_passant_target_square = 0;
+}
+
+void GameState::undo_null_move()
+{
+    player_in_turn = Color::opposite_color(player_in_turn);
+    en_passant_target_square = en_passant_target_square_history.top();
+    en_passant_target_square_history.pop();
+}

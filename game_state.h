@@ -57,6 +57,10 @@ public:
 
     void undo_move(Move& move);
 
+    void make_null_move();
+
+    void undo_null_move();
+
     BoardItem board[120];
 
     Color::ColorType player_in_turn;

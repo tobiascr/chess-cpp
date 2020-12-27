@@ -148,6 +148,33 @@ void move_sort(std::vector<Move>& move_list)
     }
 }
 
+bool stale_mate(GameState& game_state)
+{
+    MoveGenerator generator;
+
+    // Is there any legal moves?
+    std::vector<Move>& move_list =
+                       generator.get_moves_no_castlings_only_queen_promotions(game_state);
+    if(move_list.size() > 0)
+    {
+        return false; // If there are legal moves, it's not a stale mate.
+    }
+
+    // Is the player in turn in check?
+    game_state.make_null_move();
+    move_list = generator.get_pseudo_legal_moves_no_castlings_only_queen_promotions(game_state);
+    for(Move move : move_list)
+    {
+        if(game_state.board[move.to_square].type == BoardItem::king)
+        {
+            game_state.undo_null_move();
+            return false; // If the king is in check, it's not a stale mate.
+        }
+    }
+    game_state.undo_null_move();
+    return true;
+}
+
 int negamax(GameState& game_state, const int depth, int alpha, int beta)
 {
     int value = position_value(game_state);
@@ -205,6 +232,7 @@ std::string root_negamax(GameState& game_state, const int depth)
 
     move_sort(move_list);
 
+    int value;
     int alpha = -1000000;
     int beta = 1000000;
     Move best_move = move_list[0];
@@ -212,7 +240,14 @@ std::string root_negamax(GameState& game_state, const int depth)
     for(Move move : move_list)
     {
         game_state.make_move(move);
-        int value = -negamax(game_state, depth - 1, -beta, -alpha);
+        if(stale_mate(game_state))
+        {
+            value = 0;
+        }
+        else
+        {
+            value = -negamax(game_state, depth - 1, -beta, -alpha);
+        }
         game_state.undo_move(move);
         if(value > alpha)
         {
