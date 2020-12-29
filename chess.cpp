@@ -88,29 +88,40 @@ if favorable for the other player. The value is given in centipawns.*/
 {
     int value = 0;
 
-    for(int r=20; r<=90; r+=10)
+    for(int row=0; row<=7; row++)
     {
-        for(int c=1; c<=8; c++)
+        for(int col=0; col<=7; col++)
         {
-            switch(game_state.board[r+c].type)
+            int square = row * 10 + col + 21;
+            switch(game_state.board[square].type)
             {
                 case BoardItem::king:
-                    value += 100000 * game_state.board[r+c].color;
+                    value += 100000 * game_state.board[square].color;
                     break;
                 case BoardItem::queen:
-                    value += 900 * game_state.board[r+c].color;
+                    value += 900 * game_state.board[square].color;
                     break;
                 case BoardItem::rook:
-                    value += 500 * game_state.board[r+c].color;
+                    value += 500 * game_state.board[square].color;
                     break;
                 case BoardItem::bishop:
-                    value += 300 * game_state.board[r+c].color;
+                    value += 300 * game_state.board[square].color;
                     break;
                 case BoardItem::knight:
-                    value += 300 * game_state.board[r+c].color;
+                    // Knights gets more valueable when they are closer to the center.
+                    value += (305 - (2 * row - 7) * (2 * row - 7) *
+                             (2 * col - 7) * (2 * col - 7) / 240) * game_state.board[square].color;
                     break;
                 case BoardItem::pawn:
-                    value += 100 * game_state.board[r+c].color;
+                    // Pawns gets more valuable when they are closer to promotion.
+                    if(game_state.board[square].color == Color::white)
+                    {
+                        value += 100 + row;
+                    }
+                    else
+                    {
+                        value -= 107 - row;
+                    }
                     break;
             }
         }
@@ -182,11 +193,11 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     // If full depth is reached or the king is captured.
     if(depth == 0 or value < -50000)
     {
-        if(value < -50000)
+        if(value < -0)
         {
             return value - depth;
         }
-        return value;
+        return value + depth;
     }
 
     MoveGenerator generator;
