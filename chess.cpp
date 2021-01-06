@@ -360,6 +360,10 @@ std::string root_negamax(GameState& game_state, const int depth)
         {
             value = 0;
         }
+        else if(game_state.threefold_repetition())
+        {
+            value = 0;
+        }
         else
         {
             value = -negamax(game_state, depth - 1, -beta, -alpha);

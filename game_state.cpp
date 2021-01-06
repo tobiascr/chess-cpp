@@ -20,6 +20,8 @@ GameState::GameState()
 
 void GameState::load_FEN_string(std::string FEN_string)
 {
+    position_history.clear();
+
     // Reset board
     for(int r=20; r<=90; r+=10)
     {
@@ -183,6 +185,8 @@ void GameState::load_FEN_string(std::string FEN_string)
         std::string square = FEN_string.substr(i, 2);
         en_passant_target_square = internal_format[square];
     }
+
+    position_history.push_back(get_unique_key());
 }
 
 void GameState::make_move(Move& move)
@@ -417,6 +421,8 @@ void GameState::make_move(std::string uci_format_move)
             board[to_square].type = BoardItem::knight;
         }
     }
+
+    position_history.push_back(get_unique_key());
 }
 
 void GameState::undo_move(Move& move)
@@ -613,8 +619,39 @@ std::string GameState::get_unique_key()
         i++;
     }
 
-    key += std::to_string(en_passant_target_square);
     key += std::to_string(player_in_turn);
+    key += std::to_string(en_passant_target_square);
+
+    if(white_kingside_castling)
+    {
+        key += 'K';
+    }
+    if(white_queenside_castling)
+    {
+        key += 'Q';
+    }
+    if(black_kingside_castling)
+    {
+        key += 'k';
+    }
+    if(black_queenside_castling)
+    {
+        key += 'q';
+    }
 
     return key;
+}
+
+bool GameState::threefold_repetition()
+{
+    std::string current_key = get_unique_key();
+    int times = 0;
+    for(std::string key : position_history)
+    {
+        if(current_key == key)
+        {
+            times++;
+        }
+    }
+    return times >= 3;
 }

@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <stack>
+#include <vector>
 #include "move.h"
 
 /* The board is represented as an array of 120 elements, enumerated from 0 to 119.
@@ -64,6 +65,11 @@ public:
     std::string get_unique_key();
     /* Return a unique key that corresponds to the current game state.*/
 
+    bool threefold_repetition();
+    /* If a true, a the current position including player in turn, castling rights and en passant
+    target square has occured at least two times before. If only checks for positions that
+    has occured before the search.*/
+
     BoardItem board[120];
 
     Color::ColorType player_in_turn;
@@ -84,6 +90,7 @@ private:
     BoardItem captured_pieces[32];
     int number_of_captured_pieces;
     std::stack<int> en_passant_target_square_history;
+    std::vector<std::string> position_history;
 
     std::map<std::string, int> internal_format =
         {{"a1", 21}, {"b1", 22}, {"c1", 23}, {"d1", 24}, {"e1", 25}, {"f1", 26}, {"g1", 27}, {"h1", 28},
