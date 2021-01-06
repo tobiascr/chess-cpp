@@ -4,11 +4,24 @@
 #include <chrono>
 #include <random>
 #include <algorithm>
+#include <unordered_map>
 #include "move.h"
 #include "game_state.h"
 #include "move_generator.h"
 
 std::mt19937 random_generator;
+
+class TranspositionTableData
+{
+public:
+    enum Type{lower_bound, upper_bound};
+    int value;
+    int depth;
+    Move best_move;
+    Type type;
+};
+
+std::unordered_map<std::string, TranspositionTableData> transposition_table;
 
 void print_board_item(BoardItem board_item)
 {
@@ -188,16 +201,52 @@ bool stale_mate(GameState& game_state)
 
 int negamax(GameState& game_state, const int depth, int alpha, int beta)
 {
+    std::string unique_key;
     int value = position_value(game_state);
 
     // If full depth is reached or the king is captured.
     if(depth == 0 or value < -50000)
     {
+        return value;
         if(value < -0)
         {
             return value - depth;
         }
         return value + depth;
+    }
+
+    const bool use_transposition_table = depth > 2;
+    if(use_transposition_table)
+    {
+        unique_key = game_state.get_unique_key();
+        if(transposition_table.count(unique_key))
+        {
+            const auto tt_data = transposition_table[unique_key];
+
+            if(tt_data.depth >= depth and tt_data.type == TranspositionTableData::lower_bound)
+            {
+                if (tt_data.value > alpha)
+                {
+                    alpha = tt_data.value;
+                }
+                if(alpha >= beta)
+                {
+                    return beta;
+                }
+            }
+
+            if(tt_data.depth >= depth and tt_data.type == TranspositionTableData::upper_bound)
+            {
+                if (tt_data.value < beta)
+                {
+                    beta = tt_data.value;
+                }
+                if(alpha >= beta)
+                {
+                    return alpha;
+                }
+            }
+        }
     }
 
     MoveGenerator generator;
@@ -211,6 +260,26 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
 
     move_sort(move_list);
 
+    if(use_transposition_table)
+    {
+        if(transposition_table.count(unique_key))
+        {
+            const auto tt_data = transposition_table[unique_key];
+
+            for(Move move : move_list)
+            {
+                if(move.type == tt_data.best_move.type and
+                   move.from_square == tt_data.best_move.from_square and
+                   move.to_square == tt_data.best_move.to_square)
+                {
+                    move_list.insert(move_list.begin(), tt_data.best_move);
+                }
+            }
+        }
+    }
+
+    Move best_move = move_list[0];
+
     for(Move move : move_list)
     {
         game_state.make_move(move);
@@ -218,12 +287,32 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
         game_state.undo_move(move);
         if (value >= beta)
         {
+            if(use_transposition_table)
+            {
+                TranspositionTableData tt_data;
+                tt_data.value = beta;
+                tt_data.depth = depth;
+                tt_data.type = TranspositionTableData::lower_bound;
+                tt_data.best_move = move;
+                transposition_table[unique_key] = tt_data;
+             }
             return beta;
         }
         if(value > alpha)
         {
             alpha = value;
+            best_move = move;
         }
+    }
+
+    if(use_transposition_table)
+    {
+        TranspositionTableData tt_data;
+        tt_data.value = alpha;
+        tt_data.depth = depth;
+        tt_data.best_move = best_move;
+        tt_data.type = TranspositionTableData::upper_bound;
+        transposition_table[unique_key] = tt_data;
     }
 
     return alpha;
@@ -248,6 +337,22 @@ std::string root_negamax(GameState& game_state, const int depth)
     int beta = 1000000;
     Move best_move = move_list[0];
 
+    std::string unique_key = game_state.get_unique_key();
+    if(transposition_table.count(unique_key))
+    {
+        const auto tt_data = transposition_table[unique_key];
+
+        for(Move move : move_list)
+        {
+            if(move.type == tt_data.best_move.type and
+               move.from_square == tt_data.best_move.from_square and
+               move.to_square == tt_data.best_move.to_square)
+            {
+                move_list.insert(move_list.begin(), tt_data.best_move);
+            }
+        }
+    }
+
     for(Move move : move_list)
     {
         game_state.make_move(move);
@@ -267,6 +372,13 @@ std::string root_negamax(GameState& game_state, const int depth)
         }
     }
 
+    TranspositionTableData tt_data;
+    tt_data.value = alpha;
+    tt_data.depth = depth;
+    tt_data.best_move = best_move;
+    tt_data.type = TranspositionTableData::upper_bound;
+    transposition_table[unique_key] = tt_data;
+
     std::cout << "info depth " << depth << " score cp " << alpha << std::endl;
     return best_move.UCI_format();
 }
@@ -284,6 +396,7 @@ void iterative_deepening(GameState& game_state, int max_time_milliseconds)
         best_move = root_negamax(game_state, depth);
         depth++;
     }
+
     std::cout << "bestmove " + best_move << std::endl;
 }
 
@@ -369,6 +482,8 @@ int main()
 {
     std::random_device rd;
     random_generator.seed(rd());
+
+    transposition_table.reserve(100000);
 
     std::string input;
     std::cout << "Type uci for UCI-mode, or give a FEN-string to compute a move:" << std::endl;

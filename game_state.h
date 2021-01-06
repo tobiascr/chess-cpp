@@ -61,6 +61,9 @@ public:
 
     void undo_null_move();
 
+    std::string get_unique_key();
+    /* Return a unique key that corresponds to the current game state.*/
+
     BoardItem board[120];
 
     Color::ColorType player_in_turn;

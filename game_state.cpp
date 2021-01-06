@@ -532,3 +532,89 @@ void GameState::undo_null_move()
     en_passant_target_square = en_passant_target_square_history.top();
     en_passant_target_square_history.pop();
 }
+
+std::string GameState::get_unique_key()
+{
+    std::string key;
+    key.resize(64);
+    int i = 0;
+
+    for(int square=21; square<=98; square++)
+    {
+        switch(board[square].type)
+        {
+            case BoardItem::king:
+                if(board[square].color == Color::white)
+                {
+                    key[i] = 'K';
+                }
+                else
+                {
+                    key[i] = 'k';
+                }
+                break;
+            case BoardItem::queen:
+                if(board[square].color == Color::white)
+                {
+                    key[i] = 'Q';
+                }
+                else
+                {
+                    key[i] = 'q';
+                }
+                break;
+            case BoardItem::rook:
+                if(board[square].color == Color::white)
+                {
+                    key[i] = 'R';
+                }
+                else
+                {
+                    key[i] = 'r';
+                }
+                break;
+            case BoardItem::bishop:
+                if(board[square].color == Color::white)
+                {
+                    key[i] = 'B';
+                }
+                else
+                {
+                    key[i] = 'b';
+                }
+                break;
+            case BoardItem::knight:
+                if(board[square].color == Color::white)
+                {
+                    key[i] = 'N';
+                }
+                else
+                {
+                    key[i] = 'n';
+                }
+                break;
+            case BoardItem::pawn:
+                if(board[square].color == Color::white)
+                {
+                    key[i] = 'P';
+                }
+                else
+                {
+                    key[i] = 'p';
+                }
+                break;
+            case BoardItem::empty_square:
+                key[i] = 'x';
+                break;
+            case BoardItem::outside_of_board:
+                i--;
+                break;
+        }
+        i++;
+    }
+
+    key += std::to_string(en_passant_target_square);
+    key += std::to_string(player_in_turn);
+
+    return key;
+}
