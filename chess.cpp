@@ -4,6 +4,7 @@
 #include <chrono>
 #include <random>
 #include <algorithm>
+#include <utility>
 #include <unordered_map>
 #include "move.h"
 #include "game_state.h"
@@ -204,15 +205,16 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     std::string unique_key;
     int value = position_value(game_state);
 
-    // If full depth is reached or the king is captured.
-    if(depth == 0 or value < -50000)
+    // If the king is captured.
+    if(value < -50000)
+    {
+        return -100000 - depth;
+    }
+
+    // If full depth is reached.
+    if(depth == 0)
     {
         return value;
-        if(value < -0)
-        {
-            return value - depth;
-        }
-        return value + depth;
     }
 
     const bool use_transposition_table = depth > 2;
@@ -318,17 +320,12 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     return alpha;
 }
 
-std::string root_negamax(GameState& game_state, const int depth)
-// Return a best move.
+std::pair<std::string, int> root_negamax(GameState& game_state, const int depth)
+// Return a best move in uci format and a position value.
 {
     MoveGenerator generator;
     std::vector<Move>& move_list =
                generator.get_moves_no_castlings_only_queen_promotions(game_state);
-
-    if(move_list.size() == 0)
-    {
-        return "No moves found.";
-    }
 
     move_sort(move_list);
 
@@ -384,12 +381,13 @@ std::string root_negamax(GameState& game_state, const int depth)
     transposition_table[unique_key] = tt_data;
 
     std::cout << "info depth " << depth << " score cp " << alpha << std::endl;
-    return best_move.UCI_format();
+    return std::pair<std::string, int> {best_move.UCI_format(), alpha};
 }
 
 void iterative_deepening(GameState& game_state, int max_time_milliseconds)
 {
     std::string best_move;
+    std::pair<std::string, int> results;
     std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point t1;
     int depth = 1;
@@ -397,11 +395,15 @@ void iterative_deepening(GameState& game_state, int max_time_milliseconds)
     while(std::chrono::steady_clock::now() - t0 <
           std::chrono::milliseconds(max_time_milliseconds))
     {
-        best_move = root_negamax(game_state, depth);
+        results = root_negamax(game_state, depth);
+        if(results.second > 50000 or results.second < -50000)
+        {
+            break;
+        }
         depth++;
     }
 
-    std::cout << "bestmove " + best_move << std::endl;
+    std::cout << "bestmove " + results.first << std::endl;
 }
 
 bool substring_in_string(std::string& string, std::string substring)
@@ -443,6 +445,10 @@ void UCI_loop()
     while(true)
     {
         std::cin >> input;
+        if(input == "ucinewgame")
+        {
+            transposition_table.clear();
+        }
         if(input == "position")
         {
             std::getline(std::cin, line);
