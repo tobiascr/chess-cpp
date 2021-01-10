@@ -214,7 +214,14 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
     // If full depth is reached.
     if(depth == 0)
     {
-        return value;
+        if(value >= 0)
+        {
+            return value + depth;
+        }
+        else
+        {
+            return value - depth;
+        }
     }
 
     const bool use_transposition_table = depth > 2;
@@ -406,16 +413,59 @@ void iterative_deepening(GameState& game_state, int max_time_milliseconds)
     std::cout << "bestmove " + results.first << std::endl;
 }
 
-bool substring_in_string(std::string& string, std::string substring)
-/* True if and only if substring is in the string.*/
+void iterative_deepening_fixed_depth(GameState& game_state, int depth)
 {
-    return string.find(substring) != std::string::npos;
+    std::string best_move;
+    std::pair<std::string, int> results;
+    int d = 1;
+
+    while(d <= depth)
+    {
+        results = root_negamax(game_state, d);
+        if(results.second > 50000 or results.second < -50000)
+        {
+            break;
+        }
+        d++;
+    }
+
+    std::cout << "bestmove " + results.first << std::endl;
 }
 
 void remove_substring(std::string& string, std::string substring)
 /* Remove the first occurence of substring from the string.*/
 {
     string.erase(string.find(substring), substring.size());
+}
+
+bool string_in_list(std::vector<std::string> list, std::string string)
+/* True iff the string is in the list.*/
+{
+    for(std::string element : list)
+    {
+        if(element == string)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::string next_string(std::vector<std::string> list, std::string string)
+/* Return the element in the list following the first occurence of the string.
+If the string is not in the list or there is not element after the string an empty
+string is returned.*/
+{
+    int i = 0;
+    while(i < list.size() - 1)
+    {
+        if(list[i] == string)
+        {
+            return list[i + 1];
+        }
+        i++;
+    }
+    return "";
 }
 
 std::vector<std::string> split(std::string string)
@@ -436,7 +486,7 @@ whitespaces.*/
 void UCI_loop()
 {
     GameState game_state;
-    std::string input, line;
+    std::string line;
     std::string FEN_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     std::cout << "id name chess-cpp" << std::endl;
     std::cout << "id author Tobias C" << std::endl;
@@ -444,25 +494,27 @@ void UCI_loop()
 
     while(true)
     {
-        std::cin >> input;
-        if(input == "ucinewgame")
+        std::getline(std::cin, line);
+        std::vector<std::string> input_list = split(line);
+
+        if(input_list[0] == "ucinewgame")
         {
             transposition_table.clear();
         }
-        if(input == "position")
+        if(input_list[0] == "position")
         {
-            std::getline(std::cin, line);
-            if(substring_in_string(line, "startpos"))
+            if(string_in_list(input_list, "startpos"))
             {
                 FEN_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
                 game_state.load_FEN_string(FEN_string);
             }
-            if(substring_in_string(line, "fen"))
+            if(string_in_list(input_list, "fen"))
             {
+                remove_substring(line, "position");
                 remove_substring(line, "fen");
                 game_state.load_FEN_string(line);
             }
-            if(substring_in_string(line, "moves"))
+            if(string_in_list(input_list, "moves"))
             {
                 // Remove everything in the string to the left of and including "moves".
                 line.erase(0, line.find("moves") + 5);
@@ -473,15 +525,23 @@ void UCI_loop()
                 }
             }
         }
-        else if(input == "isready")
+        else if(input_list[0] == "isready")
         {
             std::cout << "readyok" << std::endl;
         }
-        else if(input == "go")
+        else if(input_list[0] == "go")
         {
-            iterative_deepening(game_state, 100);
+            if(string_in_list(input_list, "depth"))
+            {
+                int depth = std::stoi(next_string(input_list, "depth"));
+                iterative_deepening_fixed_depth(game_state, depth);
+            }
+            else
+            {
+                iterative_deepening(game_state, 100);
+            }
         }
-        else if(input == "quit")
+        else if(input_list[0] == "quit")
         {
             break;
         }
