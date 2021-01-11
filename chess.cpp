@@ -12,6 +12,8 @@
 
 std::mt19937 random_generator;
 
+std::chrono::steady_clock::time_point stop_time;
+
 class TranspositionTableData
 {
 public:
@@ -291,6 +293,13 @@ int negamax(GameState& game_state, const int depth, int alpha, int beta)
 
     for(Move move : move_list)
     {
+        if(depth > 4)
+        {
+            if(std::chrono::steady_clock::now() > stop_time)
+            {
+                break;
+            }
+        }
         game_state.make_move(move);
         value = -negamax(game_state, depth - 1, -beta, -alpha);
         game_state.undo_move(move);
@@ -359,6 +368,10 @@ std::pair<std::string, int> root_negamax(GameState& game_state, const int depth)
 
     for(Move move : move_list)
     {
+        if(std::chrono::steady_clock::now() > stop_time)
+        {
+            break;
+        }
         game_state.make_move(move);
         if(stale_mate(game_state))
         {
@@ -392,15 +405,18 @@ std::pair<std::string, int> root_negamax(GameState& game_state, const int depth)
 }
 
 void iterative_deepening(GameState& game_state, int max_time_milliseconds)
+/* Return a move in no longer than the given max time.*/
 {
     std::string best_move;
     std::pair<std::string, int> results;
-    std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point t1;
+//    std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
+//    std::chrono::steady_clock::time_point t1;
+    stop_time = std::chrono::steady_clock::now() + std::chrono::milliseconds(max_time_milliseconds);
     int depth = 1;
 
-    while(std::chrono::steady_clock::now() - t0 <
-          std::chrono::milliseconds(max_time_milliseconds))
+//    while(std::chrono::steady_clock::now() - t0 <
+//          std::chrono::milliseconds(max_time_milliseconds))
+    while(std::chrono::steady_clock::now() < stop_time)
     {
         results = root_negamax(game_state, depth);
         if(results.second > 50000 or results.second < -50000)
@@ -417,6 +433,7 @@ void iterative_deepening_fixed_depth(GameState& game_state, int depth)
 {
     std::string best_move;
     std::pair<std::string, int> results;
+    stop_time = std::chrono::steady_clock::now() + std::chrono::hours(1000000);
     int d = 1;
 
     while(d <= depth)
@@ -536,9 +553,14 @@ void UCI_loop()
                 int depth = std::stoi(next_string(input_list, "depth"));
                 iterative_deepening_fixed_depth(game_state, depth);
             }
+            else if(string_in_list(input_list, "movetime"))
+            {
+                int movetime = std::stoi(next_string(input_list, "movetime"));
+                iterative_deepening(game_state, movetime);
+            }
             else
             {
-                iterative_deepening(game_state, 100);
+                iterative_deepening(game_state, 1000);
             }
         }
         else if(input_list[0] == "quit")
