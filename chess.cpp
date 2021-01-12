@@ -409,13 +409,9 @@ void iterative_deepening(GameState& game_state, int max_time_milliseconds)
 {
     std::string best_move;
     std::pair<std::string, int> results;
-//    std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
-//    std::chrono::steady_clock::time_point t1;
     stop_time = std::chrono::steady_clock::now() + std::chrono::milliseconds(max_time_milliseconds);
     int depth = 1;
 
-//    while(std::chrono::steady_clock::now() - t0 <
-//          std::chrono::milliseconds(max_time_milliseconds))
     while(std::chrono::steady_clock::now() < stop_time)
     {
         results = root_negamax(game_state, depth);
@@ -548,19 +544,61 @@ void UCI_loop()
         }
         else if(input_list[0] == "go")
         {
-            if(string_in_list(input_list, "depth"))
+            int wtime = 0;
+            int btime = 0;
+            int winc = 0;
+            int binc = 0;
+            int movetime = 0;
+
+            if(string_in_list(input_list, "wtime"))
+            {
+                wtime = std::stoi(next_string(input_list, "wtime"));
+            }
+            if(string_in_list(input_list, "btime"))
+            {
+                btime = std::stoi(next_string(input_list, "btime"));
+            }
+            if(string_in_list(input_list, "winc"))
+            {
+                winc = std::stoi(next_string(input_list, "winc"));
+            }
+            if(string_in_list(input_list, "binc"))
+            {
+                binc = std::stoi(next_string(input_list, "binc"));
+            }
+
+            if(game_state.player_in_turn == Color::white)
+            {
+                if(wtime > 0)
+                {
+                    movetime = wtime / 30 + winc;
+                }
+            }
+            else
+            {
+                if(btime > 0)
+                {
+                    movetime = btime / 30 + binc;
+                }
+            }
+
+            if(string_in_list(input_list, "movetime"))
+            {
+                movetime = std::stoi(next_string(input_list, "movetime"));
+            }
+
+            if(movetime > 0)
+            {
+                iterative_deepening(game_state, movetime);
+            }
+            else if(string_in_list(input_list, "depth"))
             {
                 int depth = std::stoi(next_string(input_list, "depth"));
                 iterative_deepening_fixed_depth(game_state, depth);
             }
-            else if(string_in_list(input_list, "movetime"))
-            {
-                int movetime = std::stoi(next_string(input_list, "movetime"));
-                iterative_deepening(game_state, movetime);
-            }
             else
             {
-                iterative_deepening(game_state, 1000);
+                iterative_deepening(game_state, 500);
             }
         }
         else if(input_list[0] == "quit")
@@ -593,7 +631,7 @@ int main()
         game_state.load_FEN_string(input);
         std::cout << std::endl;
         print_board(game_state);
-        iterative_deepening(game_state, 100);
+        iterative_deepening(game_state, 500);
     }
 
     return 0;
